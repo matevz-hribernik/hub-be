@@ -1,0 +1,10 @@
+{
+  "name": "Sensor hub API documentation",
+  "version": "1.0.0",
+  "description": "API Sensor hub list manager",
+  "template": {
+    "forceLanguage": "en"
+  }, 
+  "url" : "http://lkn-r6.fe.uni-lj.si:8484",
+  "sampleUrl": "http://lkn-r6.fe.uni-lj.si:8484"
+}
