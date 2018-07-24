@@ -25,11 +25,11 @@ var updateUserLogOnDisconect = function(req, callback){
 var userLogin = function(req, callback) {
     var Email = req.body.Email;
     var PhoneID = req.body.PhoneID;
-    var PhoneName = req.body.PhoneName;
+    var PhoneName = req.body.PhoneName.replace(/\s/g,'');
+    console.log('___', req.body)
     var Passowrd = req.body.Password;
     var hashed_password = crypto.SHA1(Passowrd).toString(crypto.enc.Base64);
 
-    console.log(req.body)
     user.returnUserIfUserExists(Email, function (err, res) {
         if (err) {
             callback({status: "NOK", error:err});
@@ -46,7 +46,6 @@ var userLogin = function(req, callback) {
                 var value = [ID, PhoneID,PhoneName];
                 sql.exacuteQueryWithArgs(query,value, function(err, result){
                     if(err){
-                        console.log(err);
                         callback(null, {status:'NOK', err:err})
                     }else{
                         return callback(null, {status: "AOK",

@@ -6,6 +6,7 @@ var sql = require('../modelDB/sqlDo.js');
 var user = require('../modelDB/user.js');
 var login = require('../modelDB/login.js');
 var experiment = require('../modelDB/experiment.js');
+var measurement = require('../modelDB/measurement.js');
 var device = require('../modelDB/device.js');
 var deviceSensor = require('../modelDB/device-sensor.js');
 var sensor = require('../modelDB/sensor.js');
@@ -27,7 +28,6 @@ module.exports = function(app) {
     app.post("/user", function(req,res){
         user.registerNewUser(req, function(err, found) {
             if(!err) {
-                console.log(found);
                 res.json(found);
             }
         });
@@ -59,7 +59,6 @@ module.exports = function(app) {
      */
     app.get("/user/:Email", function(req,res){
         var Email = req.params.Email;
-        console.log(Email)
         user.returnUserIfUserExists(Email, function(err, found) {
             if(!err) {
                 res.json({status:"AOK", data:found});
@@ -185,7 +184,6 @@ module.exports = function(app) {
      */
     app.get("/experiments/:experimentID", function(req,res){
         var ID = req.params.experimentID;
-        console.log(ID)
         experiment.getOneExperiment(ID, function(err, result){
             if(err){
                 res.json({error:err});
@@ -213,12 +211,7 @@ module.exports = function(app) {
      * @apiGroup Experiment
      */
     app.delete("/experiments/:experimentID", function(req,res){
-        console.log(req.body)
-        console.log(req.params)
-
         var ID = req.params.experimentID;
-        console.log(ID)
-
         experiment.deleteExperiment(ID, function(err, result){
             if(err){
                 res.json({error:err});
@@ -227,6 +220,92 @@ module.exports = function(app) {
             }
         })
     });
+
+
+ /**
+     * @api {post} /measurements Create a new measurement
+     * @apiGroup Measurement
+     * @apiParam {String} ExperimentID Experiment ID
+     * @apiParam {String} UserLoginId User Login Id
+     * @apiParam {String} SubjectId Subject Id
+     * @apiParam {String} MeasurementDate Measurement Date
+     * @apiParam {String} Latitude Latitude
+     * @apiParam {String} Longitude Longitude
+     * @apiParam {String} Address Address
+     */
+    app.post("/measurements", function(req,res){
+        measurement.postMeasurement(req, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+    });
+    /**
+     * @api {put} /measurements/:measurementID Update an measurement
+     * @apiGroup Measurement
+     * @apiParam {String} ExperimentID Experiment ID
+     * @apiParam {String} UserLoginId User Login Id
+     * @apiParam {String} SubjectId Subject Id
+     * @apiParam {String} MeasurementDate Measurement Date
+     * @apiParam {String} Latitude Latitude
+     * @apiParam {String} Longitude Longitude
+     * @apiParam {String} Address Address
+     */
+    app.put("/measurements/:measurementID", function(req,res){
+        measurement.updateMeasurement(req, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+    });
+
+    /**
+     * @api {get} /measurements/:experimentID Get experiment by Id
+     * @apiGroup Measurement
+     */
+    app.get("/measurements/:measurementID", function(req,res){
+        var ID = req.params.measurementID;
+        measurement.getOneMeasurement(ID, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+
+    });
+    /**
+     * @api {get} /measurements Get a experiment list
+     * @apiGroup Measurement
+     */
+    app.get("/measurements", function(req,res){
+        measurement.getAllMeasurements(function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+    });
+    /**
+     * @api {delete} /measurements/:measurementID Delete a measurement by ID
+     * @apiGroup Measurement
+     */
+    app.delete("/measurements/:measurementID", function(req,res){
+        var ID = req.params.measurementID;
+        measurement.deleteMeasurement(ID, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+    });
+
 
 //////////////////////////////////// DeviceType////////////////////////////
     /**
@@ -266,7 +345,6 @@ module.exports = function(app) {
      */
     app.get("/devicetypes/:devicetypeID", function(req,res){
         var ID = req.params.devicetypeID;
-        console.log(req.params);
         device.getOneDeviceType(ID, function(err, result){
             if(err){
                 res.json({error:err});
@@ -476,7 +554,6 @@ module.exports = function(app) {
      * @apiGroup sensor
      */
     app.get("/sensor/:sensorID", function(req,res){
-        //console.log(req)
         var ID = req.params.sensorID;
         sensor.getOneSensor(ID, function(err, result){
             if(err){

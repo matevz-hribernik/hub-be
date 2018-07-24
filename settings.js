@@ -3,10 +3,10 @@
  */
 exports.sqlSettings = {
 
-    host     : '212.235.190.198',
-    user     : 'sensors',
-    password : 'j5sx4Mu4awTcuGnZ',
-    database : 'sensors1'
+    host     : 'localhost'/*'212.235.190.198'*/,
+    user     : 'root'/*'sensors'*/,
+    password : 'j5sx4Mu4awTcuGnZ'/*'j5sx4Mu4awTcuGnZ'*/,
+    database : 'database_sensors'//'sensors1'
 
 };
 exports.messages = {

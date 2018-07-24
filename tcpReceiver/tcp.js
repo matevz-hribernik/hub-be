@@ -1,6 +1,6 @@
 var net = require('net');
 var sockets = [];
-var port = 8080;
+var port = 8888;
 var sql = require("../modelDB/sqlDo.js");
 var    JsonSocket = require('json-socket');
 
@@ -8,8 +8,8 @@ var    JsonSocket = require('json-socket');
 
 function parseSensorsData(data){
 	var dataArray = data.split(";");
-	console.log(dataArray)
-	if(dataArray.length > 5){
+	// console.log('++', dataArray)
+	/*if(dataArray.length > 5){
 		//Device motion data
 		if(dataArray[2] != ""){
 			try{
@@ -93,7 +93,7 @@ function parseSensorsData(data){
 		}
 		
 
-	}
+	}*/
 }
 
 var server = net.createServer(function(connection) {
@@ -111,6 +111,7 @@ var server = net.createServer(function(connection) {
 		
 		
 	connection.on("data", function(message){
+		// console.log("TCP data", message)
 		 var messageList = message.toString('utf8').split("\n");
 		for(indx in messageList){
 			try{	
@@ -119,7 +120,7 @@ var server = net.createServer(function(connection) {
 				console.log(error)
 			}
 		}
-		 })
+	})
 	connection.pipe(connection);
 });
 
