@@ -236,7 +236,7 @@ module.exports = function(app) {
     app.post("/measurements", function(req,res){
         measurement.postMeasurement(req, function(err, result){
             if(err){
-                res.json({error:err});
+                res.json(err);
             }else{
                 res.json(result);
             }

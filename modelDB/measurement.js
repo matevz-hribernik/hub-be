@@ -9,17 +9,19 @@ module.exports.postMeasurement = function(req,  callback){
     var ExperimentID = req.body.ExperimentID;
     var UserLoginID = req.body.UserLoginID;
     var SubjectID = req.body.SubjectID;
-    var MeasurementDate = req.body.MeasurementDate;
+    var MeasurementDate = new Date(req.body.MeasurementDate * 1);
     var Latitude = req.body.Latitude;
     var Longitude = req.body.Longitude;
     var Address = req.body.Address;
     var query = "INSERT INTO "+ settings.tableNames.measurement +" (ExperimentID, UserLoginID, SubjectID, MeasurementDate, Latitude, Longitude, Address) VALUES (?, ?, ?, ?, ?, ?, ?)";
     var data = [ExperimentID, UserLoginID, SubjectID, MeasurementDate, Latitude, Longitude, Address];
+
     sql.exacuteQueryWithArgs(query,data, function(err, res){
         if(err){
             callback({status:"NOK", error:err});
         }else{
-            callback({status:"AOK", data: {
+            callback(null, {status:"AOK", data: {
+                MeasurementID: res.insertId,
                 ExperimentID: ExperimentID,
                 UserLoginID: UserLoginID,
                 SubjectID: SubjectID,
