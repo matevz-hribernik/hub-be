@@ -23,10 +23,11 @@ var updateUserLogOnDisconect = function(req, callback){
 
 //Login
 var userLogin = function(req, callback) {
+    console.log('___', req)
+
     var Email = req.body.Email;
     var PhoneID = req.body.PhoneID;
     var PhoneName = req.body.PhoneName.replace(/\s/g,'');
-    console.log('___', req.body)
     var Passowrd = req.body.Password;
     var hashed_password = crypto.SHA1(Passowrd).toString(crypto.enc.Base64);
 

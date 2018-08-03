@@ -13,7 +13,7 @@ var sensor = require('../modelDB/sensor.js');
 var sensordata = require('../modelDB/sensordata.js');
 var replicationsensor = require('../modelDB/replicationSensor.js');
 var subject = require('../modelDB/subject.js');
-
+var replication = require('../modelDB/replication')
 module.exports = function(app) {
 
     /**
@@ -868,6 +868,89 @@ module.exports = function(app) {
      */
     app.put("/subject/:subjectID", function(req,res){
         subject.updateSubject(req, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+    });
+
+
+
+
+
+
+    //   REPLICATION
+    /**
+     * @api {post} /replications Create a new replication
+     * @apiGroup replication
+     * @apiParam {String} FirstName replication's FirstName
+     * @apiParam {String} LastName replication's LastName
+     * @apiParam {String} Remark replication's Remark
+     */
+    app.post("/replications", function(req,res){
+        replication.postReplication(req, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+    });
+    /**
+     * @api {get} /replications/:replicationID by ID
+     * @apiGroup replication
+     */
+    app.get("/replications/:replicationID", function(req,res){
+        var ID = req.params.replicationID;
+        replication.getReplicationByID(ID, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+
+    });
+    /**
+     * @api {get} /replications Get an replication list
+     * @apiGroup replication
+     */
+    app.get("/replications", function(req,res){
+        replication.getAllReplications(req.query, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+    });
+    /**
+     * @api {delete} /replications/:replicationID Delete an replication by ID
+     * @apiGroup replication
+     */
+    app.delete("/replications/:replicationID", function(req,res){
+
+        var ID = req.params.replicationID;
+        replication.deleteReplicationByID(ID, function(err, result){
+            if(err){
+                res.json({error:err});
+            }else{
+                res.json(result);
+            }
+        })
+    });
+
+      /**
+     * @api {put} /replications/:replicationID Update an replication
+     * @apiGroup replication
+     * @apiParam {String} FirstName replication's FirstName
+     * @apiParam {String} LastName replication's LastName
+     * @apiParam {String} Remark replication's Remark
+     */
+    app.put("/replications/:replicationID", function(req,res){
+        replication.updateReplication(req, function(err, result){
             if(err){
                 res.json({error:err});
             }else{

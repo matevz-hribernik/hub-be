@@ -5,11 +5,11 @@
 var sql = require("./mysqlModel.js");
 var settings = require("../settings.js");
 
-module.exports.postReplicationMetadata = function(req,  callback){
-    var MetaData = req.body.MetaData;
-    var ReplicationID = req.body.ReplicationID;
-    var query = "INSERT INTO "+ settings.tableNames.replicationMetadata +" (Name, Description) VALUES (?, ?)";
-    var data = [Name, Description];
+module.exports.postReplication = function(req,  callback){
+    var MeasurementID = req.body.MeasurementID;
+
+    var query = "INSERT INTO "+ settings.tableNames.replication +" (MeasurementID) VALUES (?)";
+    var data = [MeasurementID];
     sql.exacuteQueryWithArgs(query,data, function(err, res){
         if(err){
             callback({status:"NOK", error:err});
@@ -19,117 +19,39 @@ module.exports.postReplicationMetadata = function(req,  callback){
     })
 };
 
-module.exports.updateDeviceType = function(req, callback){
-    var ID = req.params.devicetypeID;
-    var query = "SELECT * from " + settings.tableNames.sifDeviceType + " WHERE ID = ?";
+module.exports.updateReplication = function(req, callback){
+    var MeasurementID = req.body.MeasurementID ? req.body.MeasurementID : res[0].MeasurementID;
+  
+    var ID = req.params.replicationID;
+    var query = "SELECT * from " + settings.tableNames.replication + " WHERE ID = ?";
     var args = [ID];
     sql.exacuteQueryWithArgs(query, args, function(err, res){
         if(err){
-            callback(err);
+            callback({status:"NOK", error: "Record does not exist"});
         }else{
-
-            var Name = req.body.Name ? req.body.Name : res[0].Name;
-            var Description = req.body.Description ? req.body.Description : res[0].Description;
-            query = "UPDATE "+ settings.tableNames.sifDeviceType +" SET Name = ?, Description = ? WHERE ID = ?;";
-            args = [Name, Description,ID];
+            query = "UPDATE "+ settings.tableNames.replication +" SET MeasurementID = ? WHERE ID = ?;";
+            args = [MeasurementID,ID];
             sql.exacuteQueryWithArgs(query,args, function(err, result){
                 if(err){
-                    callback(err);
+                    callback({status:"NOK", error:err});
                 }else{
                     callback(null, {status: "AOK"});
                 }
             });
         }
     });
-
 };
 
-module.exports.getAllDeviceTypes = function(callback){
-    var query = "SELECT * from " + settings.tableNames.sifDeviceType + ";";
-    sql.exacuteQuery(query, function(err, res){
-        if(!err){
-            callback(null, {status:"AOK", data:res})
-        }else{
-            callback({status:"NOK", error:err});
-        }
-    })
-};
+module.exports.getAllReplications = function(requestQuery, callback){
 
-module.exports.getOneDeviceType = function(ID, callback){
-    var query = "SELECT * FROM " + settings.tableNames.sifDeviceType + " WHERE ID = ?;"
-    var arg = [ID];
-    sql.exacuteQueryWithArgs(query, arg, function(err, res){
-        if(!err){
-            callback(null, {status:"AOK", data:res})
-        }else{
-            callback({status:"NOK", error:err});
-        }
-    })
-};
-module.exports.deleteDeviceType = function(ID, callback){
-    var query = "DELETE FROM " + settings.tableNames.sifDeviceType + " WHERE ID = ?;";
-    var arg = [ID];
-    sql.exacuteQueryWithArgs(query, arg, function(err, res){
-        console.log(err)
-        if(!err){
-            callback(null, {status:"AOK"})
-        }else{
-            callback({status:"NOK", error:err});
-        }
-    });
-};
-//    //////////////////Device
-module.exports.postDevice = function(req,  callback){
-    var DeviceTypeID = req.body.DeviceTypeID;
-    var DeviceSampleTime = req.body.DeviceSampleTime;
-    if (typeof DeviceSampleTime != "number") {
-        callback({status:"NOK", error:"DeviceSampleTime must be a number."})
-    }else{
-        var query = "INSERT INTO "+ settings.tableNames.device +" (DeviceTypeID, DeviceSampleTime) VALUES (?, ?)";
-        var data = [DeviceTypeID, DeviceSampleTime];
-        sql.exacuteQueryWithArgs(query,data, function(err, res){
-            if(err){
-                callback({status:"NOK", error:err});
-            }else{
-                callback(null, {status:"AOK", data: res})
-            }
-        })
+    var query = "SELECT * from " + settings.tableNames.replication;
+    var args = [];
+    if (requestQuery && typeof requestQuery.MeasurementID !== 'undefined') {
+        query += "WHERE MeasurementID = ?";
+        args.push(requestQuery.MeasurementID)
     }
-};
-
-module.exports.updateDevice = function(req, callback){
-    var DeviceTypeID = req.body.DeviceTypeID ? req.body.DeviceTypeID : res[0].DeviceTypeID;
-    var DeviceSampleTime = req.body.DeviceSampleTime ? req.body.DeviceSampleTime : res[0].DeviceSampleTime;
-    if (typeof DeviceSampleTime != "number") {
-        callback({status:"NOK", error:"DeviceSampleTime must be a number."})
-    }else{
-        var ID = req.params.deviceID;
-        var query = "SELECT * from " + settings.tableNames.device + " WHERE ID = ?";
-        var args = [ID];
-        sql.exacuteQueryWithArgs(query, args, function(err, res){
-            if(err){
-                callback(err);
-            }else{
-                query = "UPDATE "+ settings.tableNames.device +" SET DeviceTypeID = ?, DeviceSampleTime = ? WHERE ID = ?;";
-                args = [DeviceTypeID, DeviceSampleTime,ID];
-                sql.exacuteQueryWithArgs(query,args, function(err, result){
-                    if(err){
-                        callback(err);
-                    }else{
-                        callback(null, {status: "AOK"});
-                    }
-                });
-            }
-        });
-    }
-
-
-
-};
-
-module.exports.getAllDevices = function(callback){
-    var query = "SELECT * from " + settings.tableNames.device + ";";
-    sql.exacuteQuery(query, function(err, res){
+    query += ";";
+    sql.exacuteQueryWithArgs(query, args, function(err, res){
         if(!err){
             callback(null, {status:"AOK", data:res})
         }else{
@@ -138,8 +60,8 @@ module.exports.getAllDevices = function(callback){
     })
 };
 
-module.exports.getOneDevice = function(ID, callback){
-    var query = "SELECT * FROM " + settings.tableNames.device + " WHERE ID = ?;"
+module.exports.getOneReplication = function(ID, callback){
+    var query = "SELECT * FROM " + settings.tableNames.replication + " WHERE ID = ?;"
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
@@ -150,10 +72,9 @@ module.exports.getOneDevice = function(ID, callback){
     })
 };
 module.exports.deleteDevice = function(ID, callback){
-    var query = "DELETE FROM " + settings.tableNames.device + " WHERE ID = ?;";
+    var query = "DELETE FROM " + settings.tableNames.replication + " WHERE ID = ?;";
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
-        console.log(res)
         if(!err){
             callback(null, {status:"AOK"})
         }else{
