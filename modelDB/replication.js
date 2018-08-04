@@ -8,7 +8,7 @@ var settings = require("../settings.js");
 module.exports.postReplication = function(req,  callback){
     var MeasurementID = req.body.MeasurementID;
 
-    var query = "INSERT INTO "+ settings.tableNames.replication +" (MeasurementID) VALUES (?)";
+    var query = "INSERT INTO "+ settings.tableNames.replication + " (MeasurementID) VALUES (?)";
     var data = [MeasurementID];
     sql.exacuteQueryWithArgs(query,data, function(err, res){
         if(err){
@@ -47,7 +47,7 @@ module.exports.getAllReplications = function(requestQuery, callback){
     var query = "SELECT * from " + settings.tableNames.replication;
     var args = [];
     if (requestQuery && typeof requestQuery.MeasurementID !== 'undefined') {
-        query += "WHERE MeasurementID = ?";
+        query += " WHERE MeasurementID = ?";
         args.push(requestQuery.MeasurementID)
     }
     query += ";";
