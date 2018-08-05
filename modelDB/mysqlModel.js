@@ -16,7 +16,7 @@ var exacuteQuery = function(sqlQuerry, callback){
         }
         connection.query(sqlQuerry, function(error, result){
             if (error){
-                console.log(error);
+                console.log("Error " + sqlQuery + " " + error)
                 //throw error;
             }
             return callback(null, result);
@@ -33,9 +33,10 @@ var exacuteQueryWithArgs = function(sqlQuery, data,  callback){
             console.log(err);
             callback(error)
         }
+
         connection.query(sqlQuery, data, function(error, result){
             if (error){
-                console.log("****" + error)
+                console.log("Error " + sqlQuery + " " + data + " " + error);
                 callback(error)
             }else{
                 callback(null, result);

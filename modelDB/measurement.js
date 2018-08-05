@@ -49,9 +49,20 @@ module.exports.updateMeasurement = function(req, callback){
             var Latitude = req.body.Latitude ? req.body.Latitude : res[0].Latitude;
             var Longitude = req.body.Longitude ? req.body.Longitude : res[0].Longitude;
             var Address = req.body.Address ? req.body.Address : res[0].Address;
+            var Active = typeof req.body.Active !== 'undefined' ? req.body.Active : res[0].Active;
 
-            query = "UPDATE "+ settings.tableNames.measurement +" SET ExperimentID = ?, UserLoginID = ?, SubjectID = ?, MeasurementDate = ?, Latitude = ?, Longitude = ?, Address = ? WHERE ID = ?;";
-            args = [ExperimentID, UserLoginID, SubjectID, MeasurementDate, Latitude, Longitude, Address, ID];
+            query = "UPDATE " + settings.tableNames.measurement + " SET ExperimentID = ?, UserLoginID = ?, SubjectID = ?, MeasurementDate = ?, Latitude = ?, Longitude = ?, Address = ?, Active = ? WHERE ID = ?;";
+            args = [
+                ExperimentID,
+                UserLoginID,
+                SubjectID,
+                MeasurementDate,
+                Latitude,
+                Longitude,
+                Address,
+                Active,
+                ID
+            ];
             sql.exacuteQueryWithArgs(query,args, function(err, result){
                 if(err){
                     callback(err);

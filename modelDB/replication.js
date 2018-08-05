@@ -7,20 +7,22 @@ var settings = require("../settings.js");
 
 module.exports.postReplication = function(req,  callback){
     var MeasurementID = req.body.MeasurementID;
-
     var query = "INSERT INTO "+ settings.tableNames.replication + " (MeasurementID) VALUES (?)";
     var data = [MeasurementID];
+    console.log(data)
     sql.exacuteQueryWithArgs(query,data, function(err, res){
         if(err){
             callback({status:"NOK", error:err});
         }else{
-            callback(null, {status:"AOK", data: res})
+            callback(null, {status:"AOK", data: {
+                    ID: res.insertId
+                }
+            })
         }
     })
 };
 
 module.exports.updateReplication = function(req, callback){
-    var MeasurementID = req.body.MeasurementID ? req.body.MeasurementID : res[0].MeasurementID;
   
     var ID = req.params.replicationID;
     var query = "SELECT * from " + settings.tableNames.replication + " WHERE ID = ?";
@@ -29,15 +31,33 @@ module.exports.updateReplication = function(req, callback){
         if(err){
             callback({status:"NOK", error: "Record does not exist"});
         }else{
-            query = "UPDATE "+ settings.tableNames.replication +" SET MeasurementID = ? WHERE ID = ?;";
-            args = [MeasurementID,ID];
-            sql.exacuteQueryWithArgs(query,args, function(err, result){
-                if(err){
-                    callback({status:"NOK", error:err});
-                }else{
-                    callback(null, {status: "AOK"});
+            var MeasurementID = req.body.MeasurementID ? req.body.MeasurementID : res[0].MeasurementID;
+            var Active = req.body.Active;
+            args = [];
+            if (MeasurementID || typeof Active !== 'undefined') {
+                query = "UPDATE "+ settings.tableNames.replication +" SET ";
+
+                if (MeasurementID) {
+                    query += "MeasurementID = ? "
+                    args.push(MeasurementID)
                 }
-            });
+
+                if (typeof Active !== 'undefined') {
+                    query += "Active = ? "
+                    args.push(Active)
+                }
+                query += "WHERE ID = ?;"
+                args.push(ID);
+                sql.exacuteQueryWithArgs(query,args, function(err, result){
+                    if(err){
+                        callback({status:"NOK", error:err});
+                    }else{
+                        callback(null, {status: "AOK"});
+                    }
+                });
+            } else {
+                callback({status:"NOK", error:"No arguments"});
+            }
         }
     });
 };
@@ -71,7 +91,7 @@ module.exports.getOneReplication = function(ID, callback){
         }
     })
 };
-module.exports.deleteDevice = function(ID, callback){
+module.exports.deleteReplicationByID = function(ID, callback){
     var query = "DELETE FROM " + settings.tableNames.replication + " WHERE ID = ?;";
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
