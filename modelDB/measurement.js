@@ -76,7 +76,7 @@ module.exports.updateMeasurement = function(req, callback){
 };
 
 module.exports.getAllMeasurements = function(callback){
-    var query = "SELECT * from " + settings.tableNames.measurement + ";";
+    var query = "SELECT * from " + settings.tableNames.measurement + " ORDER BY MeasurementDate DESC;";
     sql.exacuteQuery(query, function(err, res){
         if(!err){
             callback(null, {status:"AOK", data:res})

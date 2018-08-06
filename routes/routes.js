@@ -1,7 +1,3 @@
-/**
- * Created by EkaterinaAcc on 07-Nov-15.
- */
-
 var sql = require('../modelDB/sqlDo.js');
 var user = require('../modelDB/user.js');
 var login = require('../modelDB/login.js');
@@ -13,8 +9,12 @@ var sensor = require('../modelDB/sensor.js');
 var sensordata = require('../modelDB/sensordata.js');
 var replicationsensor = require('../modelDB/replicationSensor.js');
 var subject = require('../modelDB/subject.js');
-var replication = require('../modelDB/replication')
+var replication = require('../modelDB/replication');
+
+
+
 module.exports = function(app) {
+    require('./config/replicationMetaData')(app);
 
     /**
      * @api {post} /user Create a new user
@@ -82,7 +82,7 @@ module.exports = function(app) {
         });
     });
 
-//LOGIN
+    //LOGIN
 
     /**
      * @api {post} /user-login Create a new user-login
@@ -307,7 +307,7 @@ module.exports = function(app) {
     });
 
 
-//////////////////////////////////// DeviceType////////////////////////////
+    //////////////////////////////////// DeviceType////////////////////////////
     /**
      * @api {post} /devicetypes Create a new sifdevicetype
      * @apiGroup device
@@ -518,7 +518,7 @@ module.exports = function(app) {
             }
         })
     });
-//    /////////////////////////// Sensor
+    //    /////////////////////////// Sensor
     /**
      * @api {post} /device Create a new sensor
      * @apiGroup sensor
@@ -591,7 +591,7 @@ module.exports = function(app) {
             }
         });
     });
-////////////////////////////////sensorType////////////////////////////////
+    ////////////////////////////////sensorType////////////////////////////////
     /**
      * @api {post} /sensortypes Create a new sifSensorType
      * @apiGroup sensortypes
@@ -918,10 +918,13 @@ module.exports = function(app) {
      * @apiGroup replication
      */
     app.get("/replications", function(req,res){
+                console.log(req.query)
+
         replication.getAllReplications(req.query, function(err, result){
             if(err){
                 res.json({error:err});
             }else{
+                console.log('Result', result)
                 res.json(result);
             }
         })
