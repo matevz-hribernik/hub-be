@@ -17,14 +17,11 @@ var updateUserLogOnDisconect = function(req, callback){
         }else{
             callback(null, {status:"AOK"})
         }
-        //console.log(res + " Log out time has been updated " +res.changedRows );
     });
 };
 
 //Login
 var userLogin = function(req, callback) {
-    console.log('___', req)
-
     var Email = req.body.Email;
     var PhoneID = req.body.PhoneID;
     var PhoneName = req.body.PhoneName.replace(/\s/g,'');

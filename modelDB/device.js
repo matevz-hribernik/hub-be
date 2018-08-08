@@ -153,7 +153,6 @@ module.exports.deleteDevice = function(ID, callback){
     var query = "DELETE FROM " + settings.tableNames.device + " WHERE ID = ?;";
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
-        console.log(res)
         if(!err){
             callback(null, {status:"AOK"})
         }else{

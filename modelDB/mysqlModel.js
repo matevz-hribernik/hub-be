@@ -7,22 +7,18 @@ var pool = mysql.createPool(
     settings.sqlSettings
 );
 
-var exacuteQuery = function(sqlQuerry, callback){
-    //console.log(sqlQuerry);
+var exacuteQuery = function(sqlQuery, callback){
     pool.getConnection(function(err, connection){
         if (err){
-            //console.log(err);
             throw err;
         }
-        connection.query(sqlQuerry, function(error, result){
+        connection.query(sqlQuery, function(error, result){
             if (error){
                 console.log("Error " + sqlQuery + " " + error)
-                //throw error;
             }
             return callback(null, result);
         });
         connection.release();
-        //console.log("updateUserLogOnDisconect conection id " + connection.threadId+ " has been released!");
     });
 };
 
@@ -30,7 +26,6 @@ var exacuteQueryWithArgs = function(sqlQuery, data,  callback){
 
     pool.getConnection(function(err, connection){
         if (err){
-            console.log(err);
             callback(error)
         }
 
@@ -44,7 +39,6 @@ var exacuteQueryWithArgs = function(sqlQuery, data,  callback){
 
         });
         connection.release();
-        //console.log("updateUserLogOnDisconect conection id " + connection.threadId+ " has been released!");
     });
 };
 

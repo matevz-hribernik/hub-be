@@ -47,7 +47,6 @@ module.exports.updateReplication = function(req, callback){
                 }
                 query += "WHERE ID = ?;"
                 args.push(ID);
-                console.log(query)
                 sql.exacuteQueryWithArgs(query,args, function(err, result){
                     if(err){
                         callback({status:"NOK", error:err});
@@ -71,7 +70,6 @@ module.exports.getAllReplications = function(requestQuery, callback){
         args.push(requestQuery.MeasurementID)
     }
     query += " ORDER BY Timestamp DESC;";
-    console.log(query)
     sql.exacuteQueryWithArgs(query, args, function(err, res){
         if(!err){
             callback(null, {status:"AOK", data:res})

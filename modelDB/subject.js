@@ -56,7 +56,6 @@ module.exports.getSubjectByID = function(ID, callback){
 module.exports.deleteSubjectByID = function(ID, callback){
     var query = "DELETE FROM " + settings.tableNames.subject + " WHERE ID = ?;";
     var arg = [ID];
-    console.log(ID)
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
             callback(null, {status:"AOK"})

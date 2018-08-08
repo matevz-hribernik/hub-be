@@ -97,7 +97,7 @@ function parseSensorsData(data){
 }
 
 var server = net.createServer(function(connection) {
-    console.log('client connected');
+    console.log('TCP client connected');
     connection.on('end', function() {
         console.log('client disconnected');
     });
@@ -113,6 +113,7 @@ var server = net.createServer(function(connection) {
 	connection.on("data", function(message){
 		// console.log("TCP data", message)
 		 var messageList = message.toString('utf8').split("\n");
+		 console.log(messageList)
 		for(indx in messageList){
 			try{	
 			parseSensorsData(messageList[indx]);

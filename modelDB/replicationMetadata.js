@@ -8,10 +8,8 @@ var settings = require("../settings.js");
 module.exports.postReplicationMetadata = function(req,  callback){
     var ReplicationID = req.body.ReplicationID;
     var MetaData = req.body.MetaData;
-    console.log(req.body)
     var query = "INSERT INTO "+ settings.tableNames.replicationMetadata + " (ReplicationID, MetaData) VALUES (?, ?)";
     var data = [ReplicationID, MetaData];
-    console.log(data)
     sql.exacuteQueryWithArgs(query,data, function(err, res){
         if(err){
             callback(err);

@@ -14,8 +14,8 @@ serverUdp.on('listening', function () {
 serverUdp.on('message', function (message, remote) {
    //console.log(remote.address + ':' + remote.port +' - ' + message);
     var jsonMesage = JSON.parse( message.toString('utf8').trim());
-    console.log("******" + jsonMesage + "========");
-    sql.storeDataOfSensorFromUdp(jsonMesage);
+    console.log("UDP msg", jsonMesage);
+    // sql.storeDataOfSensorFromUdp(jsonMesage);
     //sql.storeSensorsDataFromUdp(jsonMesage);
 });
 

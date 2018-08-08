@@ -918,13 +918,10 @@ module.exports = function(app) {
      * @apiGroup replication
      */
     app.get("/replications", function(req,res){
-                console.log(req.query)
-
         replication.getAllReplications(req.query, function(err, result){
             if(err){
                 res.json({error:err});
             }else{
-                console.log('Result', result)
                 res.json(result);
             }
         })

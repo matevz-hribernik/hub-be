@@ -58,7 +58,6 @@ module.exports.getAllDeviceSensors = function(req, callback){
     }
     sql.exacuteQuery(query, function(err, res){
         if(!err){
-            console.log(res.data)
             callback(null, {status:"AOK", data:res})
         }else{
             callback({status:"NOK", error:err});

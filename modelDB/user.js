@@ -14,12 +14,9 @@ module.exports.registerNewUser = function(req,  callback){
     var lastname = req.body.LastName;
     returnUserIfUserExists(email, function(err, res){
         if(err){
-
-            console.log("Error appeared " + err);
             callback({status:"NOK", error:err})
         }else{
             if(res == null){
-                console.log(res);
                 password =  crypto.SHA1(password).toString(crypto.enc.Base64);
                 //register a new user
                 var query = "INSERT INTO " +settings.tableNames.user + " (Email, FirstName, LastName, Password ) VALUES (?, ?, ?, ?);";
@@ -72,7 +69,6 @@ module.exports.updateUser = function(req, callback){
                 var Scatter = req.body.Scatter ? req.body.Scatter : res[0].Scatter;
                 var password = req.body.Password;
                 var hashed_password = crypto.SHA1(password).toString(crypto.enc.Base64);
-                //console.log(res[0].Password, hashed_password)
                 if(res[0].Password == hashed_password) {
                     var query = "UPDATE " + settings.tableNames.user + " SET Email = ?,FirstName = ?, LastName = ?, Admin = ?, DecimalPoint = ?, Delimiter = ?, Scatter = ? WHERE ID = ?;";
                     var arg = [Email, FirstName, LastName, Admin, DecimalPoint, Deimiter, Scatter, res[0].ID];
@@ -115,7 +111,6 @@ module.exports.deleteUser = function(Email, callback){
                     }
                 });
             }else{
-                //console.log("UDNE");
                 callback(null,{"status":"UDNE"})
             }
         }else{

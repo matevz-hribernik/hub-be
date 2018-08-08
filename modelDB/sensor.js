@@ -37,7 +37,6 @@ module.exports.updateSensorType = function(req, callback){
             var Number = req.body.Number ? req.body.Number : res[0].Number;
             query = "UPDATE "+ settings.tableNames.sifSensorType +" SET Name = ?, Description = ?, DOF = ?, Number = ? WHERE ID = ?;";
             args = [Name, Description, DOF, Number, ID];
-            console.log(query, args)
             sql.exacuteQueryWithArgs(query,args, function(err, result){
                 if(err){
                     callback(err);
@@ -77,7 +76,6 @@ module.exports.deleteSensorType = function(ID, callback){
     var query = "DELETE FROM " + settings.tableNames.sifSensorType + " WHERE ID = ?;";
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
-        console.log(err)
         if(!err){
             callback(null, {status:"AOK"})
         }else{
@@ -94,8 +92,6 @@ module.exports.postSensor = function(req,  callback){
     }else{
         var query = "INSERT INTO "+ settings.tableNames.sensor +" (SensorTypeID, `Range`) VALUES (?, ?);";
         var data = [SensorTypeID, Range];
-
-        console.log(query, data)
         sql.exacuteQueryWithArgs(query,data, function(err, res){
             if(err){
                 callback({status:"NOK", error:err});

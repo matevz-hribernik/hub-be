@@ -14,7 +14,6 @@ module.exports.postExperiment = function(req,  callback){
         if(err){
             callback({status:"NOK", error:err});
         }else{
-            console.log(res);
             callback({status:"AOK"})
         }
     })
@@ -71,7 +70,6 @@ module.exports.deleteExperiment = function(ID, callback){
     var query = "DELETE FROM " + settings.tableNames.experiment + " WHERE ID = ?;"
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
-        console.log(res)
         if(!err){
             callback(null, {status:"AOK"})
         }else{

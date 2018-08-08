@@ -14,7 +14,6 @@ var storeSensorsData = function(id, data){
     query = "INSERT INTO measures (id_user) VALUES ("+id + ")";
     sql.exacuteQuery(query, function(error, res){
         if (error){
-            //console.log(error);
             throw error;
         }else{
             var id = res.insertId;
@@ -24,7 +23,6 @@ var storeSensorsData = function(id, data){
                 queryGrav = "INSERT into data_grav (id_measures, grav_x, grav_y, grav_z ) VALUES ( " + id+ ", " + data.grav.x +", " + data.grav.y +", " + data.grav.z + ")";
                 var queries = [queryAcc, queryGyro, queryGrav];
                 for (var i = 0; i < queries.length; i++) {
-                    console.log(queries[i]);
                     sql.exacuteQuery(queries[i], function (err, res) {
                         if (err)
                             console.log(err);
@@ -106,9 +104,7 @@ module.exports.forgotPassword = function(email, callback){
                     var args = [hashed_password, email];
                     sql.exacuteQueryWithArgs(query, args, function(error, result){
                         if(!error){
-                            console.log(result.affectedRows);
                             if(result.affectedRows > 0){
-                                console.log("password changed!!!!");
                                 forgotpassword.newPwd(email,newPassword);
                                 callback(null, {"status": "AOK"});
                             }
@@ -130,14 +126,11 @@ var changeAccountPassword = function(email, password, new_password, callback){
     returnPasswordIfUserExists(email, function( err, res){
         if(!err){
             if (res != null){
-                console.log(res[0].password);
-                console.log(password);
                 if(res[0].password == password) {
                     var query = "UPDATE " + settings.tableNames.user + " SET password = ?  WHERE id_user = ?;";
                     var arg = [new_password, res[0].id_user];
                     sql.exacuteQueryWithArgs(query, arg, function (err, result) {
                         if (!err) {
-                            console.log(result.affectedRowst);
                             callback(null, {"status": "AOK"});
                         }
                     });
@@ -146,7 +139,6 @@ var changeAccountPassword = function(email, password, new_password, callback){
                     callback(null, {"status": "PDNM"});
                 }
             }else{
-                console.log("UDNE");
                 callback(null,{"status":"UDNE"})
             }
 
@@ -159,22 +151,17 @@ var deleteAccountFromDB = function(email, password, callback){
     returnPasswordIfUserExists(email, function(err, res){
         if(!err){
             if (res != null){
-                //console.log(res[0].password);
                 if(res[0].password == password) {
                     var query = "DELETE from " + settings.tableNames.user + " WHERE id_user = " + res[0].id_user;
-                    //var arga = [email];
                     sql.exacuteQuery(query, function (err, result) {
                         if (!err) {
-                            //console.log(result.affectedRowst);
                             callback(null, {"status": "AOK"});
                         }
                     });
-                    //callback(null, res);
                 }else{
                     callback(null, {"status": "PDNM"});
                 }
             }else{
-                console.log("UDNE");
                 callback(null,{"status":"UDNE"})
             }
 
@@ -220,7 +207,6 @@ var getDataTypes = function(callback){
 };
 var getMeasuresByEmail = function(userId, callback){
     var query = "SELECT * FROM measure WHERE id_login in (SELECT id_login FROM user_login WHERE id_user = ?)";
-    console.log(userId);
 	var args = [userId];
     sql.exacuteQueryWithArgs(query,args, function(e, res){
         if(!e){
@@ -242,12 +228,9 @@ var getSensorData = function(measureId, callback){
             if (!err) {
                 if(result.length > 0){
                     data.push(result);
-                    console.log(result.length);
                 }
                 index += 1;
-                console.log("data.length "+ data.length);
                 if (index == 5) {
-                    //console.log(data);
                     callback(null, data);
                 }
             }
@@ -258,10 +241,8 @@ var getSensorData = function(measureId, callback){
 module.exports.deleteMeasure = function(measureid, callback){
 	
 	var query = "DELETE from " + settings.tableNames.measure + " WHERE id_measure = " + measureid;
-	console.log(query);
 	sql.exacuteQuery(query, function(err, result){
 		if(!err){
-			console.log(result.affectedRows);
 			callback(null, {status:"AOK"});
 		}else{
 			callback(null, {status:"NOK"})
@@ -282,7 +263,6 @@ module.exports.changeAdminStatus = function(id, status, callback){
                     }
                 });
             }else{
-                //console.log("UDNE");
                 callback(null,{"status":"UDNE"})
             }
         }else{
@@ -304,7 +284,6 @@ module.exports.changeDelimiters = function(id, delimiter, decimal_point, callbac
                     }
                 });
             }else{
-                //console.log("UDNE");
                 callback(null,{"status":"UDNE"})
             }
         }else{
