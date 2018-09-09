@@ -2,7 +2,10 @@ var net = require('net');
 var sockets = [];
 var port = 8888;
 var sql = require("../modelDB/sqlDo.js");
-var    JsonSocket = require('json-socket');
+var JsonSocket = require('json-socket');
+var replication = require("../modelDB/replication");
+var replicationSensor = require("../modelDB/replicationSensor");
+var async = require("async")
 
 //var guestId = 0;
 
@@ -108,19 +111,60 @@ var server = net.createServer(function(connection) {
 		console.log(err.stack)
 		}
 		);
+
+	function getReplications(MeasurementID, callback) {
+		replication.getAllReplications({
+			MeasurementID:MeasurementID,
+			Active: true
+		}, function(err, res) {
+			if (err || !res || !res.data || !res.data[0] || !res.data[0].Active) {
+				callback(err || "No active replication.");
+			} else {
+				callback(null, res.data[0]);
+			}
+		})
+	}
+
+	function fetchReplicationSensor(replication, callback) {
+		replication.getReplicationSensorByReplication(replication.ID, function(err, res) {
+			if (!err) {
+				callback(err)
+			} else {
+				console.log(res)
+				// callback(null, replication)
+			}
+		})
+	}
+
+
+	function postReplicationSensor(item, callback) {
+		replicationSensor.postReplicationSensor({
+			ExperimentID: item.ExperimentID,
+			DeviceID: item.DeviceID,
+			SensorID: item.SensorID,
+			ReplicationID: item.ReplicationID,
+			SampleTime: 1
+		}, function(err, res) {
+			if (err) {
+				callback(err);
+			} else {
+				callback(null, res.data);
+			}
+		})
+	}
 		
 		
 	connection.on("data", function(message){
-		// console.log("TCP data", message)
-		 var messageList = message.toString('utf8').split("\n");
-		 console.log(messageList)
-		for(indx in messageList){
-			try{	
-			parseSensorsData(messageList[indx]);
-			}catch(error){
-				console.log(error)
+		var messageList = message.toString('utf8');
+		var validJson;	
+		try{
+			validJson = JSON.parse(messageList);
+			
+			console.log(typeof validJson, validJson)
+		}catch(error){
+			console.log(error)
 			}
-		}
+		
 	})
 	connection.pipe(connection);
 });

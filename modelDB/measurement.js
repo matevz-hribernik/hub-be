@@ -4,8 +4,9 @@
 
 var sql = require("./mysqlModel.js");
 var settings = require("../settings.js");
+var replication = require("./replication.js")
 
-module.exports.postMeasurement = function(req,  callback){
+module.exports.postMeasurement = async function(req,  callback){
     var ExperimentID = req.body.ExperimentID;
     var UserLoginID = req.body.UserLoginID;
     var SubjectID = req.body.SubjectID;
@@ -15,41 +16,74 @@ module.exports.postMeasurement = function(req,  callback){
     var Address = req.body.Address;
     var query = "INSERT INTO "+ settings.tableNames.measurement +" (ExperimentID, UserLoginID, SubjectID, MeasurementDate, Latitude, Longitude, Address) VALUES (?, ?, ?, ?, ?, ?, ?)";
     var data = [ExperimentID, UserLoginID, SubjectID, MeasurementDate, Latitude, Longitude, Address];
+    
+    try {
 
-    sql.exacuteQueryWithArgs(query,data, function(err, res){
-        if(err){
-            callback({status:"NOK", error:err});
-        }else{
-            callback(null, {status:"AOK", data: {
-                MeasurementID: res.insertId,
-                ExperimentID: ExperimentID,
-                UserLoginID: UserLoginID,
-                SubjectID: SubjectID,
-                MeasurementDate: MeasurementDate,
-                Latitude: Latitude,
-                Longitude: Longitude,
-                Address: Address
-            }})
-        }
-    })
+        var measurement = await createMeasurement(query, data);
+        var measurementReplication = await createReplication(measurement);
+        measurementReplication.ExperimentID = ExperimentID;
+        measurementReplication.UserLoginID = UserLoginID;
+        measurementReplication.SubjectID = SubjectID;
+        measurementReplication.MeasurementDate = MeasurementDate;
+        measurementReplication.Latitude = Latitude;
+        measurementReplication.Longitude = Longitude;
+        measurementReplication.Address = Address;
+        callback(null, measurementReplication);
+    } catch (err) {
+
+        callback(err);
+    }    
 };
 
-module.exports.updateMeasurement = function(req, callback){
+function createMeasurement(query, data) {
+    return new Promise((resolve, reject) => {
+        sql.exacuteQueryWithArgs(query, data, function(err, res){
+            if(err){
+                reject(err);
+            }else{
+                resolve(res.insertId)
+            }
+        })
+    })
+}
+
+function createReplication(measurement) {
+    return new Promise((resolve, reject) => {
+        var request = {
+            body: {
+                MeasurementID: measurement
+            }
+        };
+        replication.postReplication(request, function(err, result) {
+            if (!err) {
+                var res = {
+                    MeasurementID: measurement,
+                    ReplicationID: result.ID
+                }
+                resolve(res);
+            } else {
+                reject(err);
+            }
+        });
+    })
+}
+
+module.exports.updateMeasurement = async function(req, callback){
     var ID = req.params.measurementID;
-    var query = "SELECT * FROM " + settings.tableNames.measurement + " WHERE ID = ?;";
-    var args = [ID];
-    sql.exacuteQueryWithArgs(query, args, function(err, res){
-        if(err){
-            callback(err);
-        }else{
-            var ExperimentID = req.body.ExperimentID ? req.body.ExperimentID : res[0].ExperimentID;
-            var UserLoginID = req.body.UserLoginID ? req.body.UserLoginID : res[0].UserLoginID;
-            var SubjectID = req.body.SubjectID ? req.body.SubjectID : res[0].SubjectID;
-            var MeasurementDate = req.body.MeasurementDate ? req.body.MeasurementDate : res[0].MeasurementDate;
-            var Latitude = req.body.Latitude ? req.body.Latitude : res[0].Latitude;
-            var Longitude = req.body.Longitude ? req.body.Longitude : res[0].Longitude;
-            var Address = req.body.Address ? req.body.Address : res[0].Address;
-            var Active = typeof req.body.Active !== 'undefined' ? req.body.Active : res[0].Active;
+    var args;
+
+     try {
+        var measurement = await readMeasurement(ID);
+        console.log('GOt measurement')
+        if (measurement && measurement[0].ID) {
+            var ExperimentID = measurement[0].ExperimentID ? measurement[0].ExperimentID : res[0].ExperimentID;
+            var UserLoginID = measurement[0].UserLoginID ? measurement[0].UserLoginID : res[0].UserLoginID;
+            var SubjectID = measurement[0].SubjectID ? measurement[0].SubjectID : res[0].SubjectID;
+            var MeasurementDate = measurement[0].MeasurementDate ? measurement[0].MeasurementDate : res[0].MeasurementDate;
+            var Latitude = measurement[0].Latitude ? measurement[0].Latitude : res[0].Latitude;
+            var Longitude = measurement[0].Longitude ? measurement[0].Longitude : res[0].Longitude;
+            var Address = measurement[0].Address ? measurement[0].Address : res[0].Address;
+            var Active = false;
 
             query = "UPDATE " + settings.tableNames.measurement + " SET ExperimentID = ?, UserLoginID = ?, SubjectID = ?, MeasurementDate = ?, Latitude = ?, Longitude = ?, Address = ?, Active = ? WHERE ID = ?;";
             args = [
@@ -63,48 +97,82 @@ module.exports.updateMeasurement = function(req, callback){
                 Active,
                 ID
             ];
-            sql.exacuteQueryWithArgs(query,args, function(err, result){
-                if(err){
-                    callback(err);
-                }else{
-                    callback(null, {status: "AOK"});
-                }
-            });
-        }
-    });
+            console.log("ARGS", args);
+            var stoped = await stopMeasurement(query, args);
+            console.log("stoped", stoped)
 
+        } else {
+            callback("Item doesn't exist");
+        }
+    } catch (err) {
+        callback(err)
+    }
+   /* sql.exacuteQueryWithArgs(query, args, function(err, res){
+        if(err){
+            callback(err);
+        }else{
+            
+
+           
+            
+        }
+    });*/
 };
+
+function stopMeasurement(query, data) {
+    return new Promise((resolve, reject) => {
+        sql.exacuteQueryWithArgs(query, data, function(err, result){
+            if(err){
+                reject(err);
+            }else{
+                resolve(result);
+            }
+        });
+    });
+}
+
+function readMeasurement(ID) {
+    return new Promise((resolve, reject) => {
+        var query = "SELECT * FROM " + settings.tableNames.measurement + " WHERE ID = ?;"
+        var arg = [ID];
+        sql.exacuteQueryWithArgs(query, arg, function(err, res){
+            if(!err){
+                resolve(res);
+            }else{
+                reject(err);
+            }
+        })
+
+    });
+}
 
 module.exports.getAllMeasurements = function(callback){
     var query = "SELECT * from " + settings.tableNames.measurement + " ORDER BY MeasurementDate DESC;";
     sql.exacuteQuery(query, function(err, res){
         if(!err){
-            callback(null, {status:"AOK", data:res})
+            callback(null, res)
         }else{
-            callback({status:"NOK", error:err});
+            callback(err);
         }
     })
 };
 
-module.exports.getOneMeasurement = function(ID, callback){
-    var query = "SELECT * FROM " + settings.tableNames.measurement + " WHERE ID = ?;"
-    var arg = [ID];
-    sql.exacuteQueryWithArgs(query, arg, function(err, res){
-        if(!err){
-            callback(null, {status:"AOK", data:res})
-        }else{
-            callback({status:"NOK", error:err});
-        }
-    })
+module.exports.getOneMeasurement = async function(ID, callback){
+    try {
+        var measurement = await readMeasurement(ID);
+        callback(null, measurement);
+    } catch (err) {
+        callback(err);
+    }
 };
 module.exports.deleteMeasurement = function(ID, callback){
     var query = "DELETE FROM " + settings.tableNames.measurement + " WHERE ID = ?;"
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
-            callback(null, {status:"AOK"})
+            callback(null, res)
         }else{
-            callback({status:"NOK", error:err});
+            callback(err);
         }
     })
 

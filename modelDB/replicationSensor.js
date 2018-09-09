@@ -8,24 +8,26 @@ var settings = require("../settings.js");
 
 
 //    //////////////////Sensor data
-module.exports.postReplicationSensor = function(req,  callback){
-    var ExperimentID = req.body.ExperimentID;
-    var DeviceID = req.body.DeviceID;
-    var SensorID = req.body.SensorID;
-    var ReplicationID = req.body.ReplicationID;
-    var SampleTime = req.body.SampleTime;
-    var MetaData = req.body.MetaData;
+module.exports.postReplicationSensor = function(body,  callback){
+    var ExperimentID = body.ExperimentID;
+    var DeviceID = body.DeviceID;
+    var SensorID = body.SensorID;
+    var ReplicationID = body.ReplicationID;
+    var SampleTime = body.SampleTime;
+    var MetaData = body.MetaData;
+    console.log(body)
 
     if (typeof SampleTime != "number") {
-        callback({status:"NOK", error:"sensor data must be a number."})
+        callback("sensor data must be a number.")
     }else{
         var query = "INSERT INTO "+ settings.tableNames.replicationSensor +" (ExperimentID, `DeviceID`, SensorID, ReplicationID, SampleTime, MetaData) VALUES (?,?,?,?,?, ?);";
         var data = [ExperimentID, DeviceID, SensorID, ReplicationID, SampleTime, MetaData];
+        console.log(data, query)
         sql.exacuteQueryWithArgs(query,data, function(err, res){
             if(err){
-                callback({status:"NOK", error:err});
+                callback(err);
             }else{
-                callback(null, {status:"AOK", data: res})
+                callback(null, res)
             }
         })
     }
@@ -37,9 +39,20 @@ module.exports.getAllReplicationSensor = function(callback){
     var query = "SELECT * from " + settings.tableNames.replicationSensor + ";";
     sql.exacuteQuery(query, function(err, res){
         if(!err){
-            callback(null, {status:"AOK", data:res})
+            callback(null, res)
         }else{
-            callback({status:"NOK", error:err});
+            callback(err);
+        }
+    })
+};
+module.exports.getReplicationSensorByReplication = function(replicationID, callback){
+    var query = "SELECT * from " + settings.tableNames.replicationSensor + "WHERE ReplicationID = ?;";
+    var args = [ReplicationID]
+    sql.exacuteQueryWithArgs(query, args, function(err, res){
+        if(!err){
+            callback(null, res)
+        }else{
+            callback(err);
         }
     })
 };
@@ -60,9 +73,9 @@ module.exports.deleteReplicationSensorByID = function(ID, callback){
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
-            callback(null, {status:"AOK"})
+            callback(null)
         }else{
-            callback({status:"NOK", error:err});
+            callback(err);
         }
     });
 };

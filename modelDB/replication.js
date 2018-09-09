@@ -5,17 +5,16 @@
 var sql = require("./mysqlModel.js");
 var settings = require("../settings.js");
 
-module.exports.postReplication = function(req,  callback){
+module.exports.postReplication = function(req, callback){
     var MeasurementID = req.body.MeasurementID;
     var query = "INSERT INTO "+ settings.tableNames.replication + " (MeasurementID) VALUES (?)";
     var data = [MeasurementID];
     sql.exacuteQueryWithArgs(query,data, function(err, res){
         if(err){
-            callback({status:"NOK", error:err});
+            callback(err);
         }else{
-            callback(null, {status:"AOK", data: {
-                    ID: res.insertId
-                }
+            callback(null,  {
+                ID: res.insertId
             })
         }
     })
@@ -32,30 +31,40 @@ module.exports.updateReplication = function(req, callback){
         }else{
             var MeasurementID = req.body.MeasurementID ? req.body.MeasurementID : res[0].MeasurementID;
             var Active = req.body.Active;
+            var TimeTo = req.body.TimeTo;
             args = [];
             if (MeasurementID || typeof Active !== 'undefined') {
                 query = "UPDATE "+ settings.tableNames.replication +" SET ";
 
                 if (MeasurementID) {
-                    query += "MeasurementID = ? "
+                    query += "MeasurementID = ?"
                     args.push(MeasurementID)
                 }
 
                 if (typeof Active !== 'undefined') {
+                    if (MeasurementID) {
+                        query += ', '
+                    }
                     query += "Active = ? "
                     args.push(Active)
                 }
+
+                if (typeof TimeTo !== "undefined") {
+                    query += "TimeTo = ?"
+                    args.push(TimeTo)
+                }
+                
                 query += "WHERE ID = ?;"
                 args.push(ID);
                 sql.exacuteQueryWithArgs(query,args, function(err, result){
                     if(err){
-                        callback({status:"NOK", error:err});
+                        callback(err);
                     }else{
-                        callback(null, {status: "AOK"});
+                        callback(null, result);
                     }
                 });
             } else {
-                callback({status:"NOK", error:"No arguments"});
+                callback("No arguments");
             }
         }
     });
@@ -70,11 +79,12 @@ module.exports.getAllReplications = function(requestQuery, callback){
         args.push(requestQuery.MeasurementID)
     }
     query += " ORDER BY Timestamp DESC;";
+
     sql.exacuteQueryWithArgs(query, args, function(err, res){
         if(!err){
-            callback(null, {status:"AOK", data:res})
+            callback(null, res)
         }else{
-            callback({status:"NOK", error:err});
+            callback(err);
         }
     })
 };
@@ -84,20 +94,21 @@ module.exports.getOneReplication = function(ID, callback){
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
-            callback(null, {status:"AOK", data:res})
+            callback(null, res)
         }else{
-            callback({status:"NOK", error:err});
+            callback(err);
         }
     })
 };
+
 module.exports.deleteReplicationByID = function(ID, callback){
     var query = "DELETE FROM " + settings.tableNames.replication + " WHERE ID = ?;";
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
-            callback(null, {status:"AOK"})
+            callback(null, res)
         }else{
-            callback({status:"NOK", error:err});
+            callback(err);
         }
     });
 };

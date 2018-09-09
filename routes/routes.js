@@ -904,7 +904,7 @@ module.exports = function(app) {
      */
     app.get("/replications/:replicationID", function(req,res){
         var ID = req.params.replicationID;
-        replication.getReplicationByID(ID, function(err, result){
+        replication.getOneReplication(ID, function(err, result){
             if(err){
                 res.json({error:err});
             }else{
