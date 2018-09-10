@@ -254,10 +254,12 @@ module.exports = function(app) {
      * @apiParam {String} Address Address
      */
     app.put("/measurements/:measurementID", function(req,res){
+        console.log('Updateamo')
         measurement.updateMeasurement(req, function(err, result){
             if(err){
                 res.json({error:err});
             }else{
+                console.log('Update measurement', result)
                 res.json(result);
             }
         })

@@ -18,17 +18,19 @@ module.exports.postMeasurement = async function(req,  callback){
     var data = [ExperimentID, UserLoginID, SubjectID, MeasurementDate, Latitude, Longitude, Address];
     
     try {
+        var measurementID = await createMeasurement(query, data);
+        var measurement = {
+            MeasurementID: measurementID
+        };
 
-        var measurement = await createMeasurement(query, data);
-        var measurementReplication = await createReplication(measurement);
-        measurementReplication.ExperimentID = ExperimentID;
-        measurementReplication.UserLoginID = UserLoginID;
-        measurementReplication.SubjectID = SubjectID;
-        measurementReplication.MeasurementDate = MeasurementDate;
-        measurementReplication.Latitude = Latitude;
-        measurementReplication.Longitude = Longitude;
-        measurementReplication.Address = Address;
-        callback(null, measurementReplication);
+        measurement.ExperimentID = ExperimentID;
+        measurement.UserLoginID = UserLoginID;
+        measurement.SubjectID = SubjectID;
+        measurement.MeasurementDate = MeasurementDate;
+        measurement.Latitude = Latitude;
+        measurement.Longitude = Longitude;
+        measurement.Address = Address;
+        callback(null, measurement);
     } catch (err) {
 
         callback(err);
@@ -47,34 +49,12 @@ function createMeasurement(query, data) {
     })
 }
 
-function createReplication(measurement) {
-    return new Promise((resolve, reject) => {
-        var request = {
-            body: {
-                MeasurementID: measurement
-            }
-        };
-        replication.postReplication(request, function(err, result) {
-            if (!err) {
-                var res = {
-                    MeasurementID: measurement,
-                    ReplicationID: result.ID
-                }
-                resolve(res);
-            } else {
-                reject(err);
-            }
-        });
-    })
-}
-
 module.exports.updateMeasurement = async function(req, callback){
     var ID = req.params.measurementID;
     var args;
 
      try {
         var measurement = await readMeasurement(ID);
-        console.log('GOt measurement')
         if (measurement && measurement[0].ID) {
             var ExperimentID = measurement[0].ExperimentID ? measurement[0].ExperimentID : res[0].ExperimentID;
             var UserLoginID = measurement[0].UserLoginID ? measurement[0].UserLoginID : res[0].UserLoginID;
@@ -97,26 +77,14 @@ module.exports.updateMeasurement = async function(req, callback){
                 Active,
                 ID
             ];
-            console.log("ARGS", args);
-            var stoped = await stopMeasurement(query, args);
-            console.log("stoped", stoped)
-
+            await stopMeasurement(query, args);
+            callback();
         } else {
             callback("Item doesn't exist");
         }
     } catch (err) {
         callback(err)
-    }
-   /* sql.exacuteQueryWithArgs(query, args, function(err, res){
-        if(err){
-            callback(err);
-        }else{
-            
-
-           
-            
-        }
-    });*/
+    }   
 };
 
 function stopMeasurement(query, data) {

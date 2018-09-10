@@ -9,15 +9,15 @@ var settings = require("../settings.js");
 //    //////////////////Sensor data
 module.exports.postSensorData = function(req,  callback){
     var ReplicationSensorID = req.body.ReplicationSensorID;
-    var TimeStamp = req.body.TimeStamp;
+    var SampleTime = req.body.SampleTime;
     var DOF1 = req.body.DOF1;
     var DOF2 = req.body.DOF2;
     var DOF3 = req.body.DOF3;
     if (typeof DOF1 != "number", typeof DOF2 != "number", typeof DOF3 != "number") {
         callback({status:"NOK", error:"sensor data must be a number."})
     }else{
-        var query = "INSERT INTO "+ settings.tableNames.sensorData +" (ReplicationSensorID, `TimeStamp`, DOF1, DOF2, DOF3) VALUES (?,?,?,?,?);";
-        var data = [ReplicationSensorID, TimeStamp, DOF1, DOF2, DOF3];
+        var query = "INSERT INTO "+ settings.tableNames.sensorData +" (ReplicationSensorID, `SampleTime`, DOF1, DOF2, DOF3) VALUES (?,?,?,?,?);";
+        var data = [ReplicationSensorID, SampleTime, DOF1, DOF2, DOF3];
         sql.exacuteQueryWithArgs(query,data, function(err, res){
             if(err){
                 callback({status:"NOK", error:err});
