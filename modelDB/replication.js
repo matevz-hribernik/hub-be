@@ -7,8 +7,8 @@ var settings = require("../settings.js");
 
 module.exports.postReplication = function(req, callback){
     var MeasurementID = req.body.MeasurementID;
-    var query = "INSERT INTO "+ settings.tableNames.replication + " (MeasurementID) VALUES (?)";
-    var data = [MeasurementID];
+    var query = "INSERT INTO "+ settings.tableNames.replication + " (MeasurementID, TimestampFrom) VALUES (?, ?)";
+    var data = [MeasurementID, new Date().getTime()];
     sql.exacuteQueryWithArgs(query,data, function(err, res){
         if(err){
             callback(err);
@@ -31,7 +31,7 @@ module.exports.updateReplication = function(req, callback){
         }else{
             var MeasurementID = req.body.MeasurementID ? req.body.MeasurementID : res[0].MeasurementID;
             var Active = req.body.Active;
-            var TimeTo = req.body.TimeTo;
+            var TimestampTo = req.body.TimestampTo;
             args = [];
             if (MeasurementID || typeof Active !== 'undefined') {
                 query = "UPDATE "+ settings.tableNames.replication +" SET ";
@@ -49,12 +49,15 @@ module.exports.updateReplication = function(req, callback){
                     args.push(Active)
                 }
 
-                if (typeof TimeTo !== "undefined") {
-                    query += "TimeTo = ?"
-                    args.push(TimeTo)
+                if (typeof TimestampTo !== "undefined") {
+                    if (MeasurementID || typeof Active !== 'undefined') {
+                         query += ', '
+                    }
+                    query += "TimestampTo = ?"
+                    args.push(TimestampTo)
                 }
-                
-                query += "WHERE ID = ?;"
+
+                query += " WHERE ID = ?;"
                 args.push(ID);
                 sql.exacuteQueryWithArgs(query,args, function(err, result){
                     if(err){
@@ -78,7 +81,7 @@ module.exports.getAllReplications = function(requestQuery, callback){
         query += " WHERE MeasurementID = ?";
         args.push(requestQuery.MeasurementID)
     }
-    query += " ORDER BY Timestamp DESC;";
+    query += " ORDER BY TimestampFrom DESC;";
 
     sql.exacuteQueryWithArgs(query, args, function(err, res){
         if(!err){

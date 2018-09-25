@@ -53,39 +53,62 @@ var returnUserIfUserExists = function(email, callback){
         }
     });
 };
+var GetUserById = function(ID, callback){
+    var query = 'SELECT * FROM ' + settings.tableNames.user + ' WHERE ID LIKE ?';
+    var insert = [ID];
+    sql.exacuteQueryWithArgs(query, insert, function(error, result){
+        if(!error){
+            if(result.length < 1){
+                callback('Not found.', null, 404);
+            }else{
+                callback(null, result[0]);
+            }
+        }
+    });
+};
 module.exports.returnUserIfUserExists = returnUserIfUserExists;
-
+module.exports.GetUserById = GetUserById;
 
 module.exports.updateUser = function(req, callback){
-    var Email = req.body.Email;
-    returnUserIfUserExists(Email, function(err, res){
+    var ID = req.params.ID;
+    GetUserById(ID, function(err, res){
         if(!err){
-            if (res != null){
-                var FirstName = req.body.FirstName ? req.body.FirstName : res[0].FirstName;
-                var LastName = req.body.LastName ? req.body.LastName : res[0].LastName;
-                var Admin = req.body.Admin ? req.body.Admin : res[0].Admin;
-                var DecimalPoint = req.body.DecimalPoint ? req.body.DecimalPoint : res[0].DecimalPoint;
-                var Deimiter = req.body.Deimiter ? req.body.Deimiter : res[0].Deimiter;
-                var Scatter = req.body.Scatter ? req.body.Scatter : res[0].Scatter;
+            if (res != null) {
+                var FirstName = req.body.FirstName ? req.body.FirstName : res.FirstName;
+                var LastName = req.body.LastName ? req.body.LastName : res.LastName;
+                var Admin = req.body.Admin ? req.body.Admin : res.Admin;
+                var DecimalPoint = req.body.DecimalPoint ? req.body.DecimalPoint : res.DecimalPoint;
+                var Delimiter = req.body.Delimiter ? req.body.Delimiter : res.Delimiter;
+                var Email = req.body.Email ? req.body.Email : res.Email;
                 var password = req.body.Password;
                 var hashed_password = crypto.SHA1(password).toString(crypto.enc.Base64);
-                if(res[0].Password == hashed_password) {
-                    var query = "UPDATE " + settings.tableNames.user + " SET Email = ?,FirstName = ?, LastName = ?, Admin = ?, DecimalPoint = ?, Delimiter = ?, Scatter = ? WHERE ID = ?;";
-                    var arg = [Email, FirstName, LastName, Admin, DecimalPoint, Deimiter, Scatter, res[0].ID];
+                if(res.Password == hashed_password) {
+                    var query = "UPDATE " + settings.tableNames.user + " SET Email = ?,FirstName = ?, LastName = ?, Admin = ?, DecimalPoint = ?, Delimiter = ? WHERE ID = ?;";
+                    var arg = [
+                        Email,
+                        FirstName,
+                        LastName,
+                        Admin,
+                        DecimalPoint,
+                        Delimiter,
+                        ID
+                    ];
                     sql.exacuteQueryWithArgs(query, arg, function (err, result) {
                         if (!err) {
-                            callback(null, {"status": "AOK"});
+                            GetUserById(ID, callback);
+                        } else {
+                            callback(err);
                         }
                     });
                     //callback(null, res);
                 }else{
-                    callback(null, {"status": "PDNM"});
+                    callback('Authorization error', null, 401);
                 }
             }else{
-                callback(null,{"status":"UDNE"})
+                callback('User doesn not exist', null, 404)
             }
         }else{
-            callback(null, "UDE");
+            callback(err);
         }
     })
 };

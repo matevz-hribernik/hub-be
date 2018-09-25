@@ -25,10 +25,12 @@ module.exports = function(app) {
      * @apiParam {String} Password user's password
      * @apiSuccess {Number} id User's id
   */
-    app.post("/user", function(req,res){
-        user.registerNewUser(req, function(err, found) {
+    app.post("/users", function(req,res){
+        user.registerNewUser(req, function(err, found, code) {
             if(!err) {
                 res.json(found);
+            } else {
+                res.status(code || 500).json(err);
             }
         });
     });
@@ -45,25 +47,29 @@ module.exports = function(app) {
      * @apiParam {String} Delimiter user's delimiter
      * @apiParam {Bool} Scatter user's scatter
      */
-    app.put("/user", function(req,res){
-        user.updateUser(req, function(err, found) {login
+    app.put("/users/:ID", function(req, res){
+        user.updateUser(req, function(err, found, code) {
             if(!err) {
+                found.Password = undefined;
                 res.json(found);
+            } else {
+                res.status(code || 500).json(err);
             }
         });
     });
     /**
-     * @api {get} /user/:Email Get an user
+     * @api {get} /user/:ID Get an user
      * @apiGroup Users
-     * @apiParam {String} Email user's email
+     * @apiParam {String} ID user's ID
      */
-    app.get("/user/:Email", function(req,res){
-        var Email = req.params.Email;
-        user.returnUserIfUserExists(Email, function(err, found) {
+    app.get("/users/:ID", function(req,res){
+        var ID = req.params.ID;
+        user.GetUserById(ID, function(err, found, code) {
             if(!err) {
-                res.json({status:"AOK", data:found});
+                found.Password = undefined;
+                res.json(found);
             }else{
-                res.json({status:"NOK", error: err});
+                res.status(code || 500).json(err);
             }
         });
     });
@@ -73,11 +79,11 @@ module.exports = function(app) {
      *
      */
     app.get("/users", function(req,res){
-        user.getAllUsers(function(err, found){
+        user.getAllUsers(function(err, found, code){
            if(err){
-               res.json({status:"NOK", error: err});
+               res.status(code || 500).json(err);
            } else{
-               res.json({status:"AOK", data:found});
+               res.json(found);
            }
         });
     });
@@ -93,11 +99,11 @@ module.exports = function(app) {
      * @apiParam {String} PhoneName user's PhoneName
      */
     app.post("/user-login", function(req,res){
-        login.userLogin(req, function(err, found) {
+        login.userLogin(req, function(err, found, code) {
             if(!err) {
                 res.json(found);
             }else{
-                res.json({error: err})
+                res.status(code || 500).json(err);
             }
         });
     });
@@ -693,12 +699,12 @@ module.exports = function(app) {
         })
     });
     /**
-     * @api {get} /sensordata/:ReplicationSensorID by ReplicationSensorID Get all sensordata
+     * @api {get} /sensordata/:ReplicationID by ReplicationID Get all sensordata
      * @apiGroup sensordata
      */
-    app.get("/sensordata/:ReplicationSensorID", function(req,res){
-        var ID = req.params.ReplicationSensorID;
-        sensordata.getSensorDataByReplicationSensorID(ID, function(err, result){
+    app.get("/sensordata/:ReplicationID", function(req,res){
+        var ID = req.params.ReplicationID;
+        sensordata.getSensorDataByReplicationID(ID, function(err, result){
             if(err){
                 res.json({error:err});
             }else{
@@ -721,13 +727,13 @@ module.exports = function(app) {
         })
     });
     /**
-     * @api {delete} /sensordata/:ReplicationSensorID Delete an sensordata by ReplicationSensorID
+     * @api {delete} /sensordata/:ReplicationID Delete an sensordata by ReplicationID
      * @apiGroup sensordata
      */
-    app.delete("/sensordata/:ReplicationSensorID", function(req,res){
+    app.delete("/sensordata/:ReplicationID", function(req,res){
 
-        var ID = req.params.ReplicationSensorID;
-        sensordata.deleteSensorByReplicationSensorID(ID, function(err, result){
+        var ID = req.params.ReplicationID;
+        sensordata.deleteSensorByReplicationID(ID, function(err, result){
             if(err){
                 res.json({error:err});
             }else{
@@ -892,9 +898,9 @@ module.exports = function(app) {
      * @apiParam {String} Remark replication's Remark
      */
     app.post("/replications", function(req,res){
-        replication.postReplication(req, function(err, result){
+        replication.postReplication(req, function(err, result, err){
             if(err){
-                res.json({error:err});
+                res.status(code || 500).json(err);
             }else{
                 res.json(result);
             }
@@ -906,9 +912,9 @@ module.exports = function(app) {
      */
     app.get("/replications/:replicationID", function(req,res){
         var ID = req.params.replicationID;
-        replication.getOneReplication(ID, function(err, result){
+        replication.getOneReplication(ID, function(err, result, code){
             if(err){
-                res.json({error:err});
+                res.status(code || 500).json(err);
             }else{
                 res.json(result);
             }
@@ -920,9 +926,10 @@ module.exports = function(app) {
      * @apiGroup replication
      */
     app.get("/replications", function(req,res){
-        replication.getAllReplications(req.query, function(err, result){
+        replication.getAllReplications(req.query, function(err, result, code){
+            console.log(err, result, code)
             if(err){
-                res.json({error:err});
+                res.status(code || 500).json(err);
             }else{
                 res.json(result);
             }
@@ -935,9 +942,9 @@ module.exports = function(app) {
     app.delete("/replications/:replicationID", function(req,res){
 
         var ID = req.params.replicationID;
-        replication.deleteReplicationByID(ID, function(err, result){
+        replication.deleteReplicationByID(ID, function(err, result, status){
             if(err){
-                res.json({error:err});
+                res.status(code || 500).json(err);
             }else{
                 res.json(result);
             }
@@ -952,9 +959,10 @@ module.exports = function(app) {
      * @apiParam {String} Remark replication's Remark
      */
     app.put("/replications/:replicationID", function(req,res){
-        replication.updateReplication(req, function(err, result){
-            if(err){
-                res.json({error:err});
+        replication.updateReplication(req, function(err, result, code){
+                console.log(err, result, code)
+            if (err){
+                res.status(code || 500).json(err);
             }else{
                 res.json(result);
             }

@@ -30,9 +30,9 @@ var userLogin = function(req, callback) {
 
     user.returnUserIfUserExists(Email, function (err, res) {
         if (err) {
-            callback({status: "NOK", error:err});
+            callback(err);
         } else if (res == null) {
-            return callback(null, {status: "UDNE"}); //UserDoesNotExist
+            return callback("User does not exist", null, 404); //UserDoesNotExist
         } else {
 
             if (res[0].Password == hashed_password) {
@@ -40,15 +40,15 @@ var userLogin = function(req, callback) {
                 var FirstName = res[0].FirstName;
                 var LastName = res[0].LastName;
                 var Email = res[0].Email;
-                var query = "INSERT INTO "+ settings.tableNames.userLogin +" (UserID, PhoneID, PhoneName) VALUES (?, ?, ?)";
+                var query = "INSERT INTO "+ settings.tableNames.userLogin + " (UserID, PhoneID, PhoneName) VALUES (?, ?, ?)";
                 var value = [ID, PhoneID,PhoneName];
                 sql.exacuteQueryWithArgs(query,value, function(err, result){
                     if(err){
-                        callback(null, {status:'NOK', err:err})
+                        callback(err)
                     }else{
-                        return callback(null, {status: "AOK",
+                        return callback(null, {
                             LoginID:result.insertId,
-                            ID: res[0].id_user,
+                            ID:ID,
                             FirstName:FirstName,
                             LastName:LastName,
                             Email:Email,
@@ -59,7 +59,7 @@ var userLogin = function(req, callback) {
                     }
                 });
             } else {
-                return callback(null, {status: "PDNM"}); //passwords do not match
+                return callback("Wrong password", null, 401); //passwords do not match
             }
         }
     });
