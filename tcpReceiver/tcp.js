@@ -11,6 +11,7 @@ var settings = require("../settings")
 
 function storeSensorData(reqObj) {
 	return new Promise((resolve, reject) => {
+		console.log("Getting data,", reqObj)
 		var MeasurementID = reqObj.measurement;
 	    var Frequency = reqObj.Frequency;
 	    var DOF1 = reqObj.x;
