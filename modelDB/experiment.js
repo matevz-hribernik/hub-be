@@ -45,7 +45,7 @@ module.exports.updateExperiment = function(req, callback){
 };
 
 module.exports.getAllExperiments = function(callback){
-    var query = "SELECT * from " + settings.tableNames.experiment + ";";
+    var query = "SELECT experiment.*, sifreplicationmetadata.MetadataNo, sifreplicationmetadata.Description as MetaDescription FROM `experiment` left join sifreplicationmetadata on experiment.ID=sifreplicationmetadata.ExperementID;";
     sql.exacuteQuery(query, function(err, res){
         if(!err){
             callback(null, {status:"AOK", data:res})
@@ -56,7 +56,7 @@ module.exports.getAllExperiments = function(callback){
 };
 
 module.exports.getOneExperiment = function(ID, callback){
-    var query = "SELECT * FROM " + settings.tableNames.experiment + " WHERE ID = ?;"
+    var query = "SELECT experiment.*, sifreplicationmetadata.MetadataNo, sifreplicationmetadata.Description as MetaDescription  FROM `experiment` left join sifreplicationmetadata on experiment.ID=sifreplicationmetadata.ExperementID WHERE experiment.ID = ?;"
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){

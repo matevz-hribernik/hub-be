@@ -85,13 +85,15 @@ module.exports.deleteSensorType = function(ID, callback){
 };
 //    //////////////////Sensor
 module.exports.postSensor = function(req,  callback){
-    var SensorTypeID = req.body.SensorTypeID;
-    var Range = req.body.Range;
+    var SensorTypeID = Number(req.body.SensorTypeID);
+    var Range = Number(req.body.Range);
     if (typeof Range != "number") {
         callback({status:"NOK", error:"DeviceSampleTime must be a number."})
     }else{
         var query = "INSERT INTO "+ settings.tableNames.sensor +" (SensorTypeID, `Range`) VALUES (?, ?);";
+        console.log(query)
         var data = [SensorTypeID, Range];
+        console.log(data)
         sql.exacuteQueryWithArgs(query,data, function(err, res){
             if(err){
                 callback({status:"NOK", error:err});
@@ -112,6 +114,7 @@ module.exports.updateSensor = function(req, callback){
         }else{
             var SensorTypeID = req.body.SensorTypeID ? req.body.SensorTypeID : res[0].SensorTypeID;
             var Range = req.body.Range ? req.body.Range : res[0].Range;
+            Range = Number(Range);
             if (typeof Range != "number") {
                 callback({status:"NOK", error:"Range must be a number."})
             }
@@ -129,7 +132,7 @@ module.exports.updateSensor = function(req, callback){
 };
 
 module.exports.getAllSensors = function(callback){
-    var query = "SELECT * from " + settings.tableNames.sensor + ";";
+    var query = "SELECT sensor.ID, sensor.Range, sensor.SensorTypeID, sifsensortype.Name as SensorTypeName, sifsensortype.Description as SensorTypeDescription, sifsensortype.DOF as SensorTypeDOF, sifsensortype.Number as SensorTypeNumber FROM `sensor` left join sifsensortype on sensor.SensorTypeID=sifsensortype.ID;";
     sql.exacuteQuery(query, function(err, res){
         if(!err){
             callback(null, {status:"AOK", data:res})
@@ -140,7 +143,7 @@ module.exports.getAllSensors = function(callback){
 };
 
 module.exports.getOneSensor = function(ID, callback){
-    var query = "SELECT * FROM " + settings.tableNames.sensor + " WHERE ID = ?;"
+    var query = "SELECT sensor.ID, sensor.Range, sensor.SensorTypeID, sifsensortype.Name as SensorTypeName, sifsensortype.Description as SensorTypeDescription, sifsensortype.DOF as SensorTypeDOF, sifsensortype.Number as SensorTypeNumber FROM `sensor` left join sifsensortype on sensor.SensorTypeID=sifsensortype.ID WHERE sensor.ID = ?;"
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){

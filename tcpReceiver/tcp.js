@@ -1,6 +1,6 @@
 var net = require('net');
 var sockets = [];
-var port = 8888;
+var port = 8889;
 var sql = require("../modelDB/mysqlModel.js");
 var JsonSocket = require('json-socket');
 var replication = require("../modelDB/replication");

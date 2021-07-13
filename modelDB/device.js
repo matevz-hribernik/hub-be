@@ -8,8 +8,9 @@ var settings = require("../settings.js");
 module.exports.postDeviceType = function(req,  callback){
     var Name = req.body.Name;
     var Description = req.body.Description;
-    var query = "INSERT INTO "+ settings.tableNames.sifDeviceType +" (Name, Description) VALUES (?, ?)";
-    var data = [Name, Description];
+    var SensorCount = req.body.SensorCount
+    var query = "INSERT INTO "+ settings.tableNames.sifDeviceType +" (Name, Description, SensorCount) VALUES (?, ?, ?)";
+    var data = [Name, Description, SensorCount];
     sql.exacuteQueryWithArgs(query,data, function(err, res){
         if(err){
             callback({status:"NOK", error:err});
@@ -27,11 +28,11 @@ module.exports.updateDeviceType = function(req, callback){
         if(err){
             callback(err);
         }else{
-
+            var SensorCount = req.body.SensorCount ? req.body.SensorCount : res[0].SensorCount;
             var Name = req.body.Name ? req.body.Name : res[0].Name;
             var Description = req.body.Description ? req.body.Description : res[0].Description;
-            query = "UPDATE "+ settings.tableNames.sifDeviceType +" SET Name = ?, Description = ? WHERE ID = ?;";
-            args = [Name, Description,ID];
+            query = "UPDATE "+ settings.tableNames.sifDeviceType +" SET Name = ?, Description = ?, SensorCount = ? WHERE ID = ?;";
+            args = [Name, Description, SensorCount, ID];
             sql.exacuteQueryWithArgs(query,args, function(err, result){
                 if(err){
                     callback(err);
@@ -81,7 +82,7 @@ module.exports.deleteDeviceType = function(ID, callback){
 //    //////////////////Device
 module.exports.postDevice = function(req,  callback){
     var DeviceTypeID = req.body.DeviceTypeID;
-    var DeviceSampleTime = req.body.DeviceSampleTime;
+    var DeviceSampleTime = Number(req.body.DeviceSampleTime);
     if (typeof DeviceSampleTime != "number") {
         callback({status:"NOK", error:"DeviceSampleTime must be a number."})
     }else{
@@ -99,7 +100,7 @@ module.exports.postDevice = function(req,  callback){
 
 module.exports.updateDevice = function(req, callback){
     var DeviceTypeID = req.body.DeviceTypeID ? req.body.DeviceTypeID : res[0].DeviceTypeID;
-    var DeviceSampleTime = req.body.DeviceSampleTime ? req.body.DeviceSampleTime : res[0].DeviceSampleTime;
+    var DeviceSampleTime = Number(req.body.DeviceSampleTime ? req.body.DeviceSampleTime : res[0].DeviceSampleTime);
     if (typeof DeviceSampleTime != "number") {
         callback({status:"NOK", error:"DeviceSampleTime must be a number."})
     }else{
@@ -129,6 +130,7 @@ module.exports.updateDevice = function(req, callback){
 
 module.exports.getAllDevices = function(callback){
     var query = "SELECT * from " + settings.tableNames.device + ";";
+    query = "SELECT device.ID, device.DeviceSampleTime, device.DeviceTypeID, sifdevicetype.Name as DeviceTypeName, sifdevicetype.Description as DeviceTypeDescription, sifdevicetype.SensorCount as DeviceTypeSenosorCount FROM `device` left join sifdevicetype on device.DeviceTypeID=sifdevicetype.ID"
     sql.exacuteQuery(query, function(err, res){
         if(!err){
             callback(null, {status:"AOK", data:res})
@@ -139,7 +141,7 @@ module.exports.getAllDevices = function(callback){
 };
 
 module.exports.getOneDevice = function(ID, callback){
-    var query = "SELECT * FROM " + settings.tableNames.device + " WHERE ID = ?;"
+    var query = "SELECT device.ID, device.DeviceSampleTime, device.DeviceTypeID, sifdevicetype.Name as DeviceTypeName, sifdevicetype.Description as DeviceTypeDescription, sifdevicetype.SensorCount as DeviceTypeSenosorCount FROM `device` left join sifdevicetype on device.DeviceTypeID=sifdevicetype.ID where device.ID = ?;"
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){

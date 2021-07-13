@@ -4,6 +4,7 @@
 var http = require('http').Server(app);
 var udp = require("./udpReceiver/udpServer.js");
 var tcp = require("./tcpReceiver/tcp.js")
+var bodyParser = require('body-parser')
 var express  = require('express');
 var connect = require('connect');
 var app      = express();
@@ -11,10 +12,13 @@ var settings = require("./settings.js");
 var port     = process.env.PORT || settings.port;
 
 // Configuration
-app.use(express.static(__dirname + '/public'));
-app.use(connect.logger('dev'));
-app.use(connect.json());
-app.use(connect.urlencoded());
+app.use(express.static(__dirname + '/frontend'));
+//app.use(connect.logger('dev'));
+app.use(bodyParser.urlencoded({ extended: false }))
+ 
+// parse application/json
+app.use(bodyParser.json())
+//app.use(connect.urlencoded());
 
 app.use(function(req, res, next){
     res.header('Access-Control-Allow-Origin','*');

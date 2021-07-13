@@ -27,7 +27,6 @@ module.exports.updateDeviceSensor = function(req, callback){
         if(err){
             callback(err);
         }else{
-
             var DeviceID = req.body.DeviceID ? req.body.DeviceID : res[0].DeviceID;
             var SensorID = req.body.SensorID ? req.body.SensorID : res[0].SensorID;
             query = "UPDATE "+ settings.tableNames.deviceSensor +" SET DeviceID = ?, SensorID = ? WHERE ID = ?;";
@@ -46,15 +45,12 @@ module.exports.updateDeviceSensor = function(req, callback){
 
 module.exports.getAllDeviceSensors = function(req, callback){
     var query = "SELECT * from " + settings.tableNames.deviceSensor + ";";
+    query = "SELECT devicesensor.DeviceID, devicesensor.SensorID, device.DeviceSampleTime, device.DeviceTypeID, sifdevicetype.Name as DeviceTypeName, sifdevicetype.Description, sifdevicetype.SensorCount, sensor.SensorTypeID, sensor.Range, sifsensortype.name as SensorTypeName, sifsensortype.Description as SensorTypeDescription, sifsensortype.DOF,sifsensortype.Number FROM `devicesensor` left join device on devicesensor.DeviceID=device.ID left join sifdevicetype on device.DeviceTypeID=sifdevicetype.ID left join sensor on devicesensor.SensorID=sensor.ID left join sifsensortype on sensor.SensorTypeID = sifsensortype.ID;"
 
     if(typeof req.query.deviceID != 'undefined'){
-        query = "SELECT * from " + settings.tableNames.deviceSensor + " WHERE deviceID =" + req.query.deviceID + ";";
+        query = "SELECT devicesensor.DeviceID, devicesensor.SensorID, device.DeviceSampleTime, device.DeviceTypeID, sifdevicetype.Name as DeviceTypeName, sifdevicetype.Description, sifdevicetype.SensorCount, sensor.SensorTypeID, sensor.Range, sifsensortype.name as SensorTypeName, sifsensortype.Description as SensorTypeDescription, sifsensortype.DOF,sifsensortype.Number FROM `devicesensor` left join device on devicesensor.DeviceID=device.ID left join sifdevicetype on device.DeviceTypeID=sifdevicetype.ID left join sensor on devicesensor.SensorID=sensor.ID left join sifsensortype on sensor.SensorTypeID = sifsensortype.ID WHERE deviceID =" + req.query.deviceID + ";";
     }else if(typeof req.query.sensorID != 'undefined'){
-        query = "SELECT * from " + settings.tableNames.deviceSensor + " WHERE deviceID =" + req.query.sensorID + ";";
-
-    }else if(typeof req.query.deviceID != 'undefined'){
-        query = "SELECT * from " + settings.tableNames.deviceSensor + " WHERE ID =" + req.query.ID + ";";
-
+        query = "SELECT devicesensor.DeviceID, devicesensor.SensorID, device.DeviceSampleTime, device.DeviceTypeID, sifdevicetype.Name as DeviceTypeName, sifdevicetype.Description, sifdevicetype.SensorCount, sensor.SensorTypeID, sensor.Range, sifsensortype.name as SensorTypeName, sifsensortype.Description as SensorTypeDescription, sifsensortype.DOF,sifsensortype.Number FROM `devicesensor` left join device on devicesensor.DeviceID=device.ID left join sifdevicetype on device.DeviceTypeID=sifdevicetype.ID left join sensor on devicesensor.SensorID=sensor.ID left join sifsensortype on sensor.SensorTypeID = sifsensortype.ID WHERE sensorID =" + req.query.sensorID + ";";
     }
     sql.exacuteQuery(query, function(err, res){
         if(!err){

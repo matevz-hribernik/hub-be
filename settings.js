@@ -5,9 +5,15 @@ exports.sqlSettings = {
 
     host     : 'localhost'/*'212.235.190.198'*/,
     user     : 'root'/*'sensors'*/,
-    password : 'j5sx4Mu4awTcuGnZ'/*'j5sx4Mu4awTcuGnZ'*/,
-    database : 'database_sensors'//'sensors1'
+    password : ''/*'j5sx4Mu4awTcuGnZ'*/,
+    database : 'sensors1'//'sensors1'
 
+};
+exports.neo4jSettings = {
+
+    uri     : 'neo4j://212.235.190.210:7687',
+    user     : 'neo4j',
+    password : 'Gazda11Od22Lait33',
 };
 exports.messages = {
     reg_failed_wrong_email_format: "Wrong email format",
@@ -30,7 +36,7 @@ exports.tableNames = {
     experimentDevice:"experimentdevice",
     device:"device",
     sifDeviceType:"sifdevicetype",
-    replicationSensor:"replicationsensor",
+    replicationSensor:"replicationsensor", 
     replication:"replication",
     deviceSensor:"devicesensor",
     sensor:"sensor",
@@ -39,4 +45,4 @@ exports.tableNames = {
     replicationMetadata:'replicationmetadata',
     subject:'subject'
 };
-exports.port = 8484;
+exports.port = 8887;

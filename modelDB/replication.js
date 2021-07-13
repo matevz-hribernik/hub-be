@@ -81,7 +81,7 @@ module.exports.getAllReplications = function(requestQuery, callback){
         query += " WHERE MeasurementID = ?";
         args.push(requestQuery.MeasurementID)
     }
-    query += " ORDER BY TimestampFrom DESC;";
+    //query += " ORDER BY TimestampFrom DESC;";
 
     sql.exacuteQueryWithArgs(query, args, function(err, res){
         if(!err){

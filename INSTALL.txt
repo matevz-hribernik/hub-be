@@ -1,0 +1,24 @@
+Tools:
+install NODE.js
+https://nodejs.org/en/
+
+install neo4j
+https://neo4j.com/
+https://neo4j.com/download/
+
+install MongoDB (optional)
+https://www.mongodb.com/
+
+Setup:
+Neo4j is graph database, mongoDB is a NoSQL database, neo4j already run on neo4j://212.235.190.210:7687, 
+and mongoDB will be installed on the same server. Login details (user, password) are in the settings.js file. 
+
+Open directory "portal-hub-be".
+Try runing "node index.js", it will probably trow errors and you will have to install/update npm and node modules.
+use "npm update" multiple times, until it finishes without errors, warnings are permissible.
+
+After setting up the enviroment, upload it to a new github repository.
+
+To learn about Neo4j and syntax called Cypher use manual https://neo4j.com/docs/cypher-manual/current/syntax/ and youtube tutorials. 
+To learn about node.js and web application framework Express we try https://www.guru99.com/node-js-express.html and youtube tutorials. 
+At the begining the MongoDB will not be required.

@@ -1,0 +1,169 @@
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">All sensors</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="sensors_table" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Range</th>
+              <th>Sensor Type ID</th>
+              <th>Sensor Type</th>
+              <th>Sensor Type Description</th>
+              <th>Sensor Type DOF</th>
+              <th>Sensor Type Number</th>
+              <th>
+                <button type="button" class="btn btn-success btn-sm open_modal" data-toggle="modal" data-target="#changeSensor">
+                    <i class="fas fa-plus-square"></i>
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+                <th>ID</th>
+                <th>Range</th>
+                <th>Sensor Type ID</th>
+                <th>Sensor Type</th>
+                <th>Sensor Type Description</th>
+                <th>Sensor Type DOF</th>
+                <th>Sensor Type Number</th>
+                <th></th>
+              </tr>
+          </tfoot>
+          <tbody>
+            <!--fill with content from server-->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">All Sensor Types</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="types_table" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>DOF</th>
+              <th>Number</th>
+              <th>
+                <button type="button" class="btn btn-success btn-sm open_modal_sensor_type" data-toggle="modal" data-target="#changeSensorType">
+                    <i class="fas fa-plus-square"></i>
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>DOF</th>
+                <th>Number</th>
+                <th></th>
+              </tr>
+          </tfoot>
+          <tbody>
+            <!--fill with content from server-->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+<div class="modal fade" id="changeSensor" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Sensor</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="modal_Sensor_ID">ID</span>
+                </div>
+                <input type="text" class="form-control" disabled placeholder="New" aria-label="ID" aria-describedby="modal_Sensor_ID">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="modal_Sensor_Range">Range</span>
+                </div>
+                <input type="number" class="form-control" placeholder="" aria-label="Range" aria-describedby="modal_Sensor_Range">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="modal_Sensor_Type">Sensor Type:</span>
+                </div>
+                <select class="custom-select" id="modal_Sensor_Type_select">
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="model_Sensor_save">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- Modal -->
+<div class="modal fade" id="changeSensorType" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Sensor Type</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="modal_Type_ID">ID</span>
+                </div>
+                <input type="text" class="form-control" disabled placeholder="New" aria-label="ID" aria-describedby="modal_Type_ID">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="modal_Type_Name">Name</span>
+                </div>
+                <input type="text" class="form-control" placeholder="" aria-label="Name" aria-describedby="modal_Type_Name">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="modal_Type_Description">Description</span>
+                </div>
+                <input type="text" class="form-control" placeholder="" aria-label="Description" aria-describedby="modal_Type_Description">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="modal_Type_dof">DOF</span>
+                </div>
+                <input type="number" class="form-control" placeholder="" aria-label="MetaData ID" aria-describedby="modal_Type_dof">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="modal_Type_Number">Number</span>
+                </div>
+                <input type="number" class="form-control" placeholder="" aria-label="MetaData Description" aria-describedby="modal_Type_Number">
+            </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="model_save">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
