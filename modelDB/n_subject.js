@@ -4,7 +4,7 @@
 
 var neo4j = require("./neo4jModel.js");
 var settings = require("../settings.js");
-
+var uuid = require('uuid');
 
 
 //Make new user
@@ -17,9 +17,8 @@ module.exports.postSubject = function(req,  callback){
     var Country = req.body.Country;
     var Place = req.body.Place;
     var Sex = req.body.Gender;
-    var UUID = "auto generate"; //TODO
-    console.log(FirstName);
-
+    var UUID = uuid.v4();
+    
     if (!FirstName || !LastName || !Remark) {
         callback({status:"NOK", error:"Name, LastName and Remark are required."})
     }else{
@@ -51,7 +50,8 @@ module.exports.getAllSubject = function(callback){
             //TODO ONLY what is needed in the frontend
             var res_data=[];
             res.records.forEach(subject => {
-                console.log(subject.get("s.firstname"))
+                //console.log(subject.get("id(s)"))
+                var ID = Number(subject.get("id(s)"));
                 var firstname = subject.get("s.firstname");
                 var lastname = subject.get("s.lastname");
                 var birthdate = new Date(subject.get("s.birthdate"));
@@ -61,12 +61,14 @@ module.exports.getAllSubject = function(callback){
                 var remark = subject.get("s.remark");
                 var countryofbirth = subject.get("s.countryofbirth");
                 var s = {
+                        ID: ID,
                         FirstName: firstname,
                         LastName: lastname,
                         Remark: remark,
                         Place: placeofbirth,
                         Country: countryofbirth,
                         Gender: gender,
+                        UUID: uuid,
                         Birthdate: birthdate
                         }
                     res_data.push(s)
@@ -78,13 +80,36 @@ module.exports.getAllSubject = function(callback){
     })
 };
 module.exports.getSubjectByID = function(ID, callback){
-    var query = "MATCH (s:Subject) where ID(s)=$id return s.firstname, s.lastname, s.gender, s.birthdate, s.placeofbirth, s.countryofbirth, s.UUID, s.remark";
+    var query = "MATCH (s:Subject) where ID(s)=$id return id(s), s.firstname, s.lastname, s.gender, s.birthdate, s.placeofbirth, s.countryofbirth, s.UUID, s.remark";
     var arg = {id: Number(ID)};
     neo4j.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
-            //TODO ONLY what is needed in the frontend
-
-            callback(null, {status:"AOK", data:res})
+            var res_data=[];
+            res.records.forEach(subject => {
+                console.log(subject.get("id(s)"))
+                var ID = Number(subject.get("id(s)"));
+                var firstname = subject.get("s.firstname");
+                var lastname = subject.get("s.lastname");
+                var birthdate = new Date(subject.get("s.birthdate"));
+                var gender = subject.get("s.gender");
+                var placeofbirth = subject.get("s.placeofbirth");
+                var uuid = subject.get("s.UUID");
+                var remark = subject.get("s.remark");
+                var countryofbirth = subject.get("s.countryofbirth");
+                var s = {
+                        ID: ID,
+                        FirstName: firstname,
+                        LastName: lastname,
+                        Remark: remark,
+                        Place: placeofbirth,
+                        Country: countryofbirth,
+                        Gender: gender,
+                        UUID: uuid,
+                        Birthdate: birthdate
+                        }
+                    res_data.push(s)
+            });
+            callback(null, {status:"AOK", data:res_data})
         }else{
             callback({status:"NOK", error:err});
         }
@@ -111,13 +136,16 @@ module.exports.getSubjectBy = function([field, tearms], callback){
 module.exports.deleteSubjectByID = function(ID, callback){
     //preveri če obstajajo povezave na ID
     var query = "MATCH (c)-[]-(n) where ID(n)=$id return count(c)";
-    var arg = {id: ID}
-    neo4j.exacuteQueryWithArgs(query, arg, function(err, res){
+    var arg = {id: Number(ID)}
+    neo4j.exacuteQueryWithArgs_noClose(query, arg, function(err, res){
+        //console.log(Number(res.records[0]._fields))
         if(!err && Number(res.records[0]._fields)<1){
             //DELETE ID only if no conncetion exists
             query2="MATCH (n: Subject) WHERE ID(n) = $id DELETE n"
-            neo4j.exacuteQueryWithArgs(query, arg, function(err, res){
+            console.log(query2, arg)
+            neo4j.exacuteQueryWithArgs(query2, arg, function(err, res){
                 if(!err){
+                    //console.log(res);
                     callback(null, {status:"AOK"})
                 }else{
                     callback({status:"NOK", error:err});
@@ -130,15 +158,20 @@ module.exports.deleteSubjectByID = function(ID, callback){
 };
 
 module.exports.updateSubject = function(req, callback){
-    var param =  req.params.subjectID
-    var query = "MATCH (s:Subject) where ID(s)=$id OR s.UUID=$uuid return s.firstname, s.lastname, s.gender, s.birthdate, s.placeofbirth, s.countryofbirth, s.UUID s.remark";
+    var param =  Number(req.params.subjectID);
+    var param2 =  req.params.subjectID;
+    var query = "MATCH (s:Subject) where id(s)=$id OR s.UUID=$uuid return id(s), s.firstname, s.lastname, s.gender, s.birthdate, s.placeofbirth, s.countryofbirth, s.UUID, s.remark";
     var args = {id: param,
-                uuid: param};
-    //console.log(ID, args)
-    neo4j.exacuteQueryWithArgs(query, args, function(err, res){
+                uuid: param2};
+    var args2;
+    var query2;
+    //console.log(args)
+    neo4j.exacuteQueryWithArgs_noClose(query, args, function(err, res){
         if(err){
             callback(err);
         }else{
+            //console.log(res)
+            param = Number(res.records[0].get("id(s)"));
             var FirstName = req.body.FirstName ? req.body.FirstName : res.records[0].get("s.firstname");
             var LastName = req.body.LastName ? req.body.LastName : res.records[0].get("s.lastname");
             var BirthDay = req.body.BirthDay ? req.body.BirthDay : res.records[0].get("s.birthdate");
@@ -146,27 +179,31 @@ module.exports.updateSubject = function(req, callback){
             var Place = req.body.Place ? req.body.Place : res.records[0].get("s.placeofbirth");
             var Sex = req.body.Gender ? req.body.Gender:  res.records[0].get("s.gender");
             var Remark = req.body.Remark ? req.body.Remark : res.records[0].get("s.remark");
-            param = res.records[0].get("s.UUID")
-            query = "MATCH (s:Subject) where s.UUID=$id SET s.firstname=$firstname, s.lastname=$lastname, s.gender=$gender, s.birthdate=$birth_day, s.placeofbirth=$birth_place, s.countryofbirth=$birth_country, s.remark=$remark";
-            args = {id: param,
-                    firstname: FirstName,
-                    lastname: LastName,
-                    birth_day: BirthDay,
-                    birth_place: Place,
-                    birth_country: Country,
-                    gender: Sex,
-                    remark: Remark};
-            //console.log(args);
-            neo4j.exacuteQueryWithArgs(query,args, function(err, result){
-                if(err){
-                    callback(err);
-                }else{
-                    callback(null, {status: "AOK"});
-                }
-            });
+            param2 = res.records[0].get("s.UUID");
+            query2 = "MATCH (s:Subject) where s.UUID=$uuid SET s.firstname=$firstname, s.lastname=$lastname, s.gender=$gender, s.birthdate=$birth_day, s.placeofbirth=$birth_place, s.countryofbirth=$birth_country, s.remark=$remark";
+            if (param2 == "auto generate"){
+                param2 = uuid.v4();
+                query2 = "MATCH (s:Subject) where id(s)=$id SET s.UUID=$uuid, s.firstname=$firstname, s.lastname=$lastname, s.gender=$gender, s.birthdate=$birth_day, s.placeofbirth=$birth_place, s.countryofbirth=$birth_country, s.remark=$remark";
+            }
+            args2 = {
+                id: param,
+                uuid: param2,
+                firstname: FirstName,
+                lastname: LastName,
+                birth_day: BirthDay,
+                birth_place: Place,
+                birth_country: Country,
+                gender: Sex,
+                remark: Remark};   
         }
-    });
-
+        neo4j.exacuteQueryWithArgs(query2,args2, function(err, result){
+            if(err){
+                callback(err);
+            }else{
+                callback(null, {status: "AOK"});
+            }
+        }); 
+    }); 
 };
 
 //New SubjectMeasurment under the new name subject_parameters

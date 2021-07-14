@@ -49,9 +49,26 @@ var exacuteQueryWithArgs = async function(Query, data,  callback){
         await session.close()
     }
 };
+var exacuteQueryWithArgs_noClose = async function(Query, data,  callback){
+
+    try {
+        driver.verifyConnectivity()
+        session = driver.session()
+        let result = await session.run(
+            Query, data
+        )
+        callback(null, result);
+    } catch (e) {
+        callback("ERROR IN exacuteQueryWithArgs() NEO4JMODEL.JS", null);
+        console.log(e)
+    } finally {
+        //await session.close()
+    }
+};
 
 module.exports.exacuteQuery = exacuteQuery;
 module.exports.exacuteQueryWithArgs = exacuteQueryWithArgs;
+module.exports.exacuteQueryWithArgs_noClose = exacuteQueryWithArgs_noClose;
 // var datetime = new Date();
 //     console.log(isNaN(datetime));
 //     console.log(String(datetime));

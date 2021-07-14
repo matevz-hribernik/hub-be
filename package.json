@@ -12,6 +12,7 @@
     "neo4j-driver": "^4.2.1",
     "nodemailer": "^2.3.2",
     "password-generator": "^2.3.2",
-    "socket.io": "^3.0.3"
+    "socket.io": "^3.0.3",
+    "uuid": "^8.3.2"
   }
 }

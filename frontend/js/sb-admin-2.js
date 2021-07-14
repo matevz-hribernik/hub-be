@@ -81,18 +81,16 @@ $( document ).ready(function() {
               console.log(data);
               var body= $("table#persons_table").find("tbody");
               data.data.forEach(subject => {
-                console.log(JSON.stringify(subject));
-                console.log(subject.firstname);
                 if (subject.Birthdate !=null){
                   var d = new Date(subject.Birthdate);
                   console.log(d);
                   var format = d.getFullYear()+"-"+(d.getMonth()+1).toString().padStart(2, '0')+"-"+d.getDate().toString().padStart(2, '0');
-                  subject.BirthDay=format
+                  subject.Birthdate=format
                   console.log(format);
                 }
                 var content = "<tr data = '"+subject.ID+"'><td>"+subject.ID+"</td><td>"+subject.FirstName+"</td><td>"+
-                subject.LastName+"</td><td>"+subject.Height+"</td><td>"+subject.Weight+"</td><td>"+subject.Age+"</td><td>"+
-                subject.BirthDay+"</td><td>"+subject.Remark+"</td><td>"+
+                subject.LastName+"</td><td>"+subject.Place+"</td><td>"+subject.Country+"</td><td>"+subject.Gender+"</td><td>"+
+                subject.Birthdate+"</td><td>"+subject.Remark+"</td><td>"+
                 '<button type="button" class="btn btn-outline-info btn-sm open_person_modal" data-toggle="modal" data-target="#changePerson"><i class="fas fa-edit"></i></button></td></tr>';
                 //console.log(content);
                 body.append(content);
@@ -102,21 +100,25 @@ $( document ).ready(function() {
                 var id = $(this).closest("tr").attr("data");
                 if (id != undefined){
                   $.get("/api/subject/"+id, function(data){
-                    var d = new Date(data.data[0].BirthDay);
+                    var d = new Date(data.data[0].Birthdate);
                     var format = d.getFullYear()+"-"+(d.getMonth()+1).toString().padStart(2, '0')+"-"+d.getDate().toString().padStart(2, '0');
-                    data.data[0].BirthDay=format;
+                    data.data[0].Birthdate=format;
                     $("[aria-describedby='modal_ID']").val(data.data[0].ID);
+                    $("[aria-describedby='modal_UUID']").val(data.data[0].UUID);
                     $("[aria-describedby='modal_FirstName']").val(data.data[0].FirstName);
                     $("[aria-describedby='modal_LastName']").val(data.data[0].LastName);
-                    $("[aria-describedby='modal_BirthDay']").val(data.data[0].BirthDay);
-                    $("[aria-describedby='modal_placeOfBirth']").val(data.data[0].placeOfBirth);
-                    $("[aria-describedby='modal_countryOfBirth']").val(data.data[0].countryOfBirth);
+                    $("[aria-describedby='modal_BirthDay']").val(data.data[0].Birthdate);
+                    $("[aria-describedby='modal_placeOfBirth']").val(data.data[0].Place);
+                    $("[aria-describedby='modal_countryOfBirth']").val(data.data[0].Country);
                     //To DO gender
+                    var g = "#"+data.data[0].Gender
+                    $("[aria-describedby='modal_Gender'").filter(g).attr('checked', true)
                     $("[aria-describedby='modal_Gender']").val(data.data[0].Gender);
                     $("[aria-describedby='modal_Remark']").val(data.data[0].Remark)
                   });
                 }else{
                   $("[aria-describedby='modal_ID']").val(null);
+                  $("[aria-describedby='modal_UUID']").val(null);
                   $("[aria-describedby='modal_FirstName']").val(null);
                   $("[aria-describedby='modal_LastName']").val(null);
                   $("[aria-describedby='modal_BirthDay']").val(null);
@@ -128,6 +130,7 @@ $( document ).ready(function() {
               });
               $("#model_save").click(function(data){
                 var id = $("[aria-describedby='modal_ID']").val();
+                var uuid = $("[aria-describedby='modal_UUID']").val();
                 var name = $("[aria-describedby='modal_FirstName']").val();
                 var lastname = $("[aria-describedby='modal_LastName']").val();
                 var placeOfBirth = $("[aria-describedby='modal_placeOfBirth']").val();
@@ -166,6 +169,7 @@ $( document ).ready(function() {
                     url: '/api/subject/'+id,
                     type: 'PUT',
                     data:  {
+                            UUID:uuid,
                             FirstName: name,
                             LastName: lastname,
                             Remark: remark,
@@ -175,7 +179,7 @@ $( document ).ready(function() {
                             BirthDay: birthday
                           },
                     success: function(data) {
-                      alert('Load was performed.');
+                      //alert('Load was performed.');
                       location.reload();
                     },
 
