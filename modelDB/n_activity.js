@@ -2,8 +2,9 @@
  * Created by EkaterinaAcc on 29-Oct-16.
  */
 
-var sql = require("./mysqlModel.js");
-var settings = require("../settings.js");
+ var neo4j = require("./neo4jModel.js");
+ var settings = require("../settings.js");
+
 
 module.exports.postActivity = function(req,  callback){
     var Name = req.body.Name;
@@ -19,6 +20,7 @@ module.exports.postActivity = function(req,  callback){
     })
 };
 
+
 module.exports.updateActivity = function(req, callback){
     var ID = req.params.experimentID;
     var query = "SELECT * from " + settings.tableNames.experiment + " WHERE ID = ?";
@@ -27,7 +29,7 @@ module.exports.updateActivity = function(req, callback){
         if(err){
             callback(err);
         }else{
-
+            console.log(res);
             var Name = req.body.Name ? req.body.Name : res[0].Name;
             var Description = req.body.Description ? req.body.Description : res[0].Description;
             query = "UPDATE "+ settings.tableNames.experiment +" SET Name = ?, Description = ? WHERE ID = ?;";
