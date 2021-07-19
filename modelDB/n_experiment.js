@@ -123,7 +123,28 @@ module.exports.getAllExperiments = function(callback){
 };
 
 module.exports.getOneExperiment = function(ID, callback){
-    
+    var query = "MATCH (e:Experiment) where ID(e)=$id retrun id(e), e.name,e.description";
+    var arg = {id: Number(ID)};
+    neo4j.exacuteQueryWithArgs(query, arg, function(err, res){
+        if(!err){
+            var res_data=[];
+            res.records.forEach(experiment => {
+                console.log(experiement.get("id(e)"))
+                var ID = Number(experiment.get("id(e)"));
+                var name = experiment.get("e.name");
+                var description = experiment.get("e.description");
+                var e = {
+                        ID: ID,
+                        Name: name,
+                        Decsription: description
+                        }
+                    res_data.push(e)
+            });
+            callback(null, {status:"AOK", data:res_data})
+        }else{
+            callback({status:"NOK", error:err});
+        }
+    }) 
     /*var query = "SELECT experiment.*, sifreplicationmetadata.MetadataNo, sifreplicationmetadata.Description as MetaDescription  FROM `experiment` left join sifreplicationmetadata on experiment.ID=sifreplicationmetadata.ExperementID WHERE experiment.ID = ?;"
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
@@ -135,7 +156,26 @@ module.exports.getOneExperiment = function(ID, callback){
     })*/
 };
 module.exports.deleteExperiment = function(ID, callback){
-    var query = "DELETE FROM " + settings.tableNames.experiment + " WHERE ID = ?;"
+    var query = "MATCH (c)-[]-(n) where ID(n)=$id return count(c)";
+    var arg = {id: Number(ID)}
+    neo4j.exacuteQueryWithArgs_noClose(query, arg, function(err, res){
+        if(!err && Number(res.records[0]._fields)<1){
+            //DELETE ID only if no conncetion exists
+            query2="MATCH (n: Experiment) WHERE ID(n) = $id DELETE n"
+            console.log(query2, arg)
+            neo4j.exacuteQueryWithArgs(query2, arg, function(err, res){
+                if(!err){
+                    //console.log(res);
+                    callback(null, {status:"AOK"})
+                }else{
+                    callback({status:"NOK", error:err});
+                } 
+            });
+        }else{
+            callback({status:"NOK", error:err});
+        }
+    })
+    /*var query = "DELETE FROM " + settings.tableNames.experiment + " WHERE ID = ?;"
     var arg = [ID];
     sql.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
@@ -143,6 +183,6 @@ module.exports.deleteExperiment = function(ID, callback){
         }else{
             callback({status:"NOK", error:err});
         }
-    })
+    })*/
 
 };
