@@ -11,7 +11,7 @@ var subject = require('../modelDB/subject.js');
 var replication = require('../modelDB/replication');
 
 var n_subject = require('../modelDB/n_subject.js');
-
+var n_activity = require('../modelDB/n_activity.js');
 
 module.exports = function(app) {
 
