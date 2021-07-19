@@ -155,6 +155,35 @@ module.exports.getOneActivity = function(ID, callback){
         }
     })*/
 };
+
+//get activity with the name
+module.exports.getOneActivityName = function(Name, callback){
+    var query = "MATCH (a:Activity) where a.name=$name return id(a), a.name, a.description";
+    var arg={name:Name};
+    neo4j.exacuteQueryWithArgs(query,arg,function(err, res){
+        if(!err){
+            var res_data=[];
+            var res_data=[];
+            res.records.forEach(activity => {
+                console.log(activity.get("id(a)"))
+                var ID = Number(activity.get("id(a)"));
+                var name = activity.get("a.name");
+                var description = activity.get("a.description");
+                var a = {
+                        ID: ID,
+                        Name: name,
+                        Description: description
+                        }
+                    res_data.push(a)
+            });
+            callback(null, {status:"AOK", data:res_data});
+        }else{
+            callback({status:"NOK", error:err});
+        }       
+    
+    })
+};
+
 module.exports.deleteActivity = function(ID, callback){
     var query = "MATCH (c)-[]-(n) where ID(n)=$id return count(c)";
     var arg = {id: Number(ID)}
