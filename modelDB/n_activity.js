@@ -38,7 +38,7 @@ module.exports.postActivity = function(req,  callback){
 
 
 module.exports.updateActivity = function(req, callback){
-    var ID = Number(req.params.experimentID);
+    var ID = Number(req.params.activityID);
     var query = "MATCH (a:Activity) where id(a)=$id return id(a), a.name,a.description";
     var args = { id:ID};
     var args2;
