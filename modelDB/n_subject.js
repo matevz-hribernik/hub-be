@@ -35,7 +35,7 @@ module.exports.postSubject = function(req,  callback){
             if(err){
                 callback({status:"NOK", error:err});
             }else{
-                callback(null, {status:"AOK", data: res})
+                callback(null, {status:"AOK", data: res});
             }
         })
     }

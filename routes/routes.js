@@ -11,7 +11,8 @@ var subject = require('../modelDB/subject.js');
 var replication = require('../modelDB/replication');
 
 var n_subject = require('../modelDB/n_subject.js');
-
+var n_activity = require('../modelDB/n_activity.js');
+var n_experiment = require('../modelDB/n_experiment.js');
 
 module.exports = function(app) {
 
@@ -562,6 +563,7 @@ module.exports = function(app) {
         })
     });
 
+
     /**
      * @api {get} /experiments/:experimentID Get experiment by Id
      * @apiGroup Experiment
@@ -577,6 +579,7 @@ module.exports = function(app) {
         })
 
     });
+    
     /**
      * @api {get} /experiments Get an experiment list
      * @apiGroup Experiment
