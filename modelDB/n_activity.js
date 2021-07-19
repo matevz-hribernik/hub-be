@@ -121,7 +121,7 @@ module.exports.getAllActivities = function(callback){
 };
 
 module.exports.getOneActivity = function(ID, callback){
-    var query = "MATCH (a:Activity) where ID(a)=$id return id(a), a:name, a:description";
+    var query = "MATCH (a:Activity) where ID(a)=$id return id(a), a.name, a.description";
     var arg={id:Number(ID)};
     neo4j.exacuteQueryWithArgs(query,arg,function(err, res){
         if(!err){
@@ -132,7 +132,7 @@ module.exports.getOneActivity = function(ID, callback){
                 var ID = Number(activity.get("id(a)"));
                 var name = activity.get("a.name");
                 var description = activity.get("a.description");
-                var s = {
+                var a = {
                         ID: ID,
                         Name: name,
                         Description: description
