@@ -1,1 +1,26 @@
-home
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">POST,UPDATE test</h6>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">URL api</label>
+            <input type="text" class="form-control" id="test_url" value="api/subject/"placeholder="URL">
+            <label for="exampleFormControlInput1" class="form-label">type (POST, UPDATE, DELETE)</label>
+            <input type="text" class="form-control" id="test_type" value="POST">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">JSON</label>
+            <textarea class="form-control" id="test_json" rows="10">{
+"FirstName": "name",
+"LastName": "lastname",
+"Remark": "remark",
+"Place": "placeOfBirth",
+"Country": "countryOfBirth",
+"Gender": "gender",
+"BirthDay": "birthday"
+}</textarea>
+        </div>
+        <button type="button" class="btn btn-primary" id="test_send">SEND</button>
+    </div>
+  </div>

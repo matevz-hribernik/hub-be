@@ -279,7 +279,7 @@ module.exports.updateSubjectMeasurment = function(req, callback){
 //get all subject measruments chronologicaly
 module.exports.getAllSubjectMeasurmentBySubjectID = function(req, callback){
     var id = req;
-    var query = "MATCH (s: SubjectMeasurment)<-[m:MEASURED]-(su:Subject) where id(su)=3 return su, m, s"
+    var query = "MATCH (s: SubjectMeasurment)<-[m:MEASURED]-(su:Subject) where id(su)="+id+" return su, m, s"
     neo4j.exacuteQuery(query, function(err,res){
         if(err){
             callback({status:"NOK", error:err});

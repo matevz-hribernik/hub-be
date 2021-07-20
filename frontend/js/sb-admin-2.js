@@ -74,7 +74,26 @@ $( document ).ready(function() {
         //fill page content
         switch (page){
           case "home":
-
+            $("#test_send").click(function(data){
+              var url = $("#test_url").val();
+              var type = $("#test_type").val();
+              var json = JSON.parse($("#test_json").val().replace(/(\r\n|\n|\r)/gm, "").replace(/[\u0000-\u0019]+/g,""));
+              console.log(url, type, json);
+              
+              $.ajax({
+                url: url,
+                type: type,
+                data:  json,
+                success: function(data) {
+                  alert('Load was performed.');
+                  location.reload();
+                },
+                error: function(data) {
+                  alert('faild to send');
+                  location.reload();
+                }
+              });
+            });
             break;
           case "persons":
             $.get("/api/subject", function(data){
