@@ -570,13 +570,26 @@ module.exports = function(app) {
      */
     app.get("/api/activities/:activityID", function(req,res){
         var ID = req.params.activityID;
-        n_activity.getOneActivity(ID, function(err, result){
-            if(err){
-                res.json({error:err});
-            }else{
-                res.json(result);
-            }
-        })
+        console.log(Number.isInteger(ID))
+        if(Number.isInteger(Number(ID))){
+            n_activity.getOneActivity(ID, function(err, result){
+                if(err){
+                    res.json({error:err});
+                }else{
+                    res.json(result);
+                }
+            })
+        }else{
+            n_activity.getOneActivityName(ID, function(err, result){
+                if(err){
+                    res.json({error:err});
+                }else{
+                    res.json(result);
+                }
+            })
+        }
+        
+        
 
     });
     
