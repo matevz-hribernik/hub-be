@@ -92,18 +92,18 @@ module.exports.updateExperiment = function(req, callback){
 };
 
 module.exports.getAllExperiments = function(callback){
-    var query="MATCH (e:Experiment) return id(e),e.name,e.description";
+    var query="MATCH (e:Experiment) return id(e),e.name,e.customfields";
     neo4j.exacuteQuery(query,function(err,res){
         if(!err){
             var res_data=[];
             res.records.forEach(experiment =>{
-                var ID=Numebr(experiment.get("id(e)"));
-                var name=experiement.get("e.name");
-                var description = experiment.get("e.description");
+                var ID=Number(experiment.get("id(e)"));
+                var name=experiment.get("e.name");
+                var customfields=experiment.get("e.customfields");
                 var e= {
                     ID:ID,
                     Name:name,
-                    Description:description
+                    CustomFields:customfields
                 };
                 res_data.push(e);
             });
@@ -123,22 +123,22 @@ module.exports.getAllExperiments = function(callback){
 };
 
 module.exports.getOneExperiment = function(ID, callback){
-    var query = "MATCH (e:Experiment) where ID(e)=$id retrun id(e), e.name,e.description";
+    var query = "MATCH (e:Experiment) where ID(e)=$id return id(e), e.name,e.customfields";
     var arg = {id: Number(ID)};
     neo4j.exacuteQueryWithArgs(query, arg, function(err, res){
         if(!err){
             var res_data=[];
             res.records.forEach(experiment => {
-                console.log(experiement.get("id(e)"))
+                console.log(experiment.get("id(e)"))
                 var ID = Number(experiment.get("id(e)"));
                 var name = experiment.get("e.name");
-                var description = experiment.get("e.description");
-                var e = {
-                        ID: ID,
-                        Name: name,
-                        Decsription: description
-                        }
-                    res_data.push(e)
+                var customfields=experiment.get("e.customfields");
+                var e= {
+                    ID:ID,
+                    Name:name,
+                    CustomFields:customfields
+                };
+                res_data.push(e);
             });
             callback(null, {status:"AOK", data:res_data})
         }else{
