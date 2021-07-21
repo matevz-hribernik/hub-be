@@ -280,10 +280,6 @@ module.exports.updateDevice = function(req, callback){
                 });
             }
         });*/
-    }
-
-
-
 };
 
 module.exports.getAllDevices = function(callback){
