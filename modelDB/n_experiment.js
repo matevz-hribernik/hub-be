@@ -13,7 +13,7 @@ module.exports.postExperiment = function(req,  callback){
     if(!Name){
         callback({status:"NOK", error:"Name is required"});
     }else{
-        var query = "MERGE (e:Experiment {name:$name, customfields=$customfields})";
+        var query = "MERGE (e:Experiment {name:$name, customfields:$customfields})";
         var data = {
             name:Name,
             customfields: CustomFields
