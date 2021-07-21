@@ -51,8 +51,8 @@ module.exports.updateExperiment = function(req, callback){
         }else{
             param=Number(res.records[0].get("id(e)"));
             var Name=req.body.Name ? req.body.Name : res.records[0].get("e.name");
-            var CustomFields=req.body.CustomFields ? req.body.Description : res.records[0].get("e.customfields");
-            query2="MATCH (e:Experiment) where id(e)=$id SET e.Name=$name,e.customfields=$customfields";
+            var CustomFields=req.body.CustomFields ? req.body.CustomFields : res.records[0].get("e.customfields");
+            query2="MATCH (e:Experiment) where id(e)=$id SET e.name=$name,e.customfields=$customfields";
             args2={
                 id: param,
                 name: Name,
