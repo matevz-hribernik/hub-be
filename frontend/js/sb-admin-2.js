@@ -74,10 +74,16 @@ $( document ).ready(function() {
         //fill page content
         switch (page){
           case "home":
+            $("#test_url").val(localStorage.test_url);
+            $("#test_type").val(localStorage.test_type);
+            $("#test_json").val(localStorage.test_json);
             $("#test_send").click(function(data){
               var url = $("#test_url").val();
+              localStorage.test_url = url;
               var type = $("#test_type").val();
+              localStorage.test_type = type;
               var json = JSON.parse($("#test_json").val().replace(/(\r\n|\n|\r)/gm, "").replace(/[\u0000-\u0019]+/g,""));
+              localStorage.test_json = $("#test_json").val();
               console.log(url, type, json);
               
               $.ajax({
