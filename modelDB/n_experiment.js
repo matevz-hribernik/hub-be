@@ -9,14 +9,14 @@ var settings = require("../settings.js");
 
 module.exports.postExperiment = function(req,  callback){
     var Name = req.body.Name;
-    var Description = req.body.Description;
+    var CustomFields = req.body.CustomFields;
     if(!Name){
         callback({status:"NOK", error:"Name is required"});
     }else{
-        var query = "MERGE (e:Experiment {name:$name, description=$description})";
+        var query = "MERGE (e:Experiment {name:$name, customfields=$customfields})";
         var data = {
             name:Name,
-            description: Description
+            customfields: CustomFields
         };
         neo4j.exacuteQueryWithArgs(query,data, function(err,res){
             if(err){
@@ -41,7 +41,7 @@ module.exports.postExperiment = function(req,  callback){
 
 module.exports.updateExperiment = function(req, callback){
     var ID = Number(req.params.experimentID);
-    var query = "MATCH (e:Experiment) where id(e)=$id return id(e),e.name,e.description";
+    var query = "MATCH (e:Experiment) where id(e)=$id return id(e),e.name,e.customfields";
     var args={id:ID};
     var args2;
     var query2;
@@ -51,12 +51,12 @@ module.exports.updateExperiment = function(req, callback){
         }else{
             param=Number(res.records[0].get("id(e)"));
             var Name=req.body.Name ? req.body.Name : res.records[0].get("e.name");
-            var Description=req.body.Description ? req.body.Description : res.records[0].get("e.description");
-            query2="MATCH (e:Experiment) where id(e)=$id SET e.Name=$name,e.description=$description";
+            var CustomFields=req.body.CustomFields ? req.body.Description : res.records[0].get("e.customfields");
+            query2="MATCH (e:Experiment) where id(e)=$id SET e.Name=$name,e.customfields=$customfields";
             args2={
                 id: param,
                 name: Name,
-                description: Description
+                customfields: CustomFields
             };
         }
         neo4j.exacuteQueryWithArgs(query2,args2,function(err,res){

@@ -39,6 +39,7 @@ module.exports.postActivity = function(req,  callback){
 
 module.exports.updateActivity = function(req, callback){
     var ID = Number(req.params.activityID);
+    console.log(ID);
     var query = "MATCH (a:Activity) where id(a)=$id return id(a), a.name,a.description";
     var args = { id:ID};
     var args2;
@@ -50,13 +51,15 @@ module.exports.updateActivity = function(req, callback){
             param=Number(res.records[0].get("id(a)"));
             var Name = req.body.Name ? req.body.Name : res.records[0].get("a.name");
             var Description = req.body.Description ? req.body.Description : res.records[0].get("a.description");
-            query2 = "MATCH (a:Activity) where a.id=$id SET a.name=$name, a.description=$description";
+            console.log(param);
+            query2 = "MATCH (a:Activity) where id(a)=$id SET a.name=$name, a.description=$description";
             args2={
                 id: param,
                 name: Name,
                 description: Description
             };
         }
+        console.log(query2,args2);
         neo4j.exacuteQueryWithArgs(query2, args2, function(err, res){
             if(err){
                 callback(err);
