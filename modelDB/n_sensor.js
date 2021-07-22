@@ -2,7 +2,9 @@
  * Created by EkaterinaAcc on 29-Oct-16.
  */
 
-var sql = require("./mysqlModel.js");
+/*var sql = require("./mysqlModel.js");
+var settings = require("../settings.js");*/
+var neo4j = require("./neo4jModel.js");
 var settings = require("../settings.js");
 
 module.exports.postSensorType = function(req,  callback){
