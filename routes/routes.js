@@ -14,6 +14,7 @@ var n_subject = require('../modelDB/n_subject.js');
 var n_activity = require('../modelDB/n_activity.js');
 var n_experiment = require('../modelDB/n_experiment.js');
 var n_device = require('../modelDB/n_device.js');
+var n_sensor = require('../modelDB/n_sensor.js');
 
 module.exports = function(app) {
 
