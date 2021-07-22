@@ -208,14 +208,14 @@ module.exports.deleteSensorType = function(ID, callback){
 //    //////////////////Sensor
 module.exports.postSensor = function(req,  callback){
     var Range = req.body.Range;
-    var bitDepth = req.body.bitDepth;
+    var BitDepth = req.body.bitDepth;
     if(!Range){
         callback({status:"NOK", error:"Range is required"});
     }else{
         var query = "MERGE (s:Sensor {range:$range, bitdepth:$bitdepth})";
         var data = {
             range:Range,
-            bitdepth: bitDepth
+            bitdepth: BitDepth
         };
         neo4j.exacuteQueryWithArgs(query,data, function(err,res){
             if(err){
