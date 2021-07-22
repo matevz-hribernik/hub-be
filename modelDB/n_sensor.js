@@ -210,7 +210,7 @@ module.exports.deleteSensorType = function(ID, callback){
 //    //////////////////Sensor
 module.exports.postSensor = function(req,  callback){
     var Range = req.body.Range;
-    var BitDepth = req.body.bitDepth;
+    var BitDepth = req.body.BitDepth;
     if(!Range){
         callback({status:"NOK", error:"Range is required"});
     }else{
